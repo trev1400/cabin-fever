@@ -1,6 +1,7 @@
 #include "glwidget.h"
 
 #include "lib/sphere.h"
+#include "lib/rect.h"
 #include "lib/resourceloader.h"
 #include "lib/errorchecker.h"
 #include "Settings.h"
@@ -39,13 +40,20 @@ void GLWidget::initializeGL() {
     m_program = ResourceLoader::createShaderProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
 
     // Initialize sphere with radius 0.5 centered at origin.
-    std::vector<GLfloat> sphereData = SPHERE_VERTEX_POSITIONS;
-    m_sphere = std::make_unique<OpenGLShape>();
+//    std::vector<GLfloat> sphereData = SPHERE_VERTEX_POSITIONS;
+//    m_sphere = std::make_unique<OpenGLShape>();
+//    m_sphere->setVertexData(&sphereData[0], sphereData.size(), VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLES, NUM_SPHERE_VERTICES);
+//    m_sphere->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
+//    m_sphere->setAttribute(ShaderAttrib::NORMAL, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, true);
+//    m_sphere->buildVAO();
 
-    m_sphere->setVertexData(&sphereData[0], sphereData.size(), VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLES, NUM_SPHERE_VERTICES);
-    m_sphere->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
-    m_sphere->setAttribute(ShaderAttrib::NORMAL, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, true);
-    m_sphere->buildVAO();
+    // initialise a rect
+    std::vector<GLfloat> rectData = RECT_VERTEX_POSITIONS;
+    m_rect = std::make_unique<OpenGLShape>();
+    m_rect->setVertexData(&rectData[0], rectData.size(), VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLES, NUM_RECT_VERTICES);
+    m_rect->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
+    m_rect->setAttribute(ShaderAttrib::NORMAL, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, true);
+    m_rect->buildVAO();
 }
 
 void GLWidget::paintGL() {
@@ -81,7 +89,8 @@ void GLWidget::paintGL() {
                 0.39f,
                 0.9f);
     rebuildMatrices();
-    m_sphere->draw();
+//    m_sphere->draw();
+    m_rect->draw();
 
     glUseProgram(0);
 }

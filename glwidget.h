@@ -33,6 +33,7 @@ private:
     GLuint m_program;
 
     std::unique_ptr<OpenGLShape> m_sphere;
+    std::unique_ptr<OpenGLShape> m_rect;
     void rebuildMatrices();
     glm::mat4 m_view, m_projection;
 
