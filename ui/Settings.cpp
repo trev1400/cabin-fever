@@ -38,6 +38,4 @@ void Settings::saveSettings() {
     // Snow
     s.setValue("snowRate", snowRate);
     s.setValue("snowSize", snowSize);
-
-    //s.setValue("currentTab", currentTab);
 }

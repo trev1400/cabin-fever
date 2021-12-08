@@ -34,6 +34,7 @@ void MainWindow::dataBind() {
 #define BIND(b) { \
     DataBinding *_b = (b); \
     m_bindings.push_back(_b); \
+    assert(connect(_b, SIGNAL(dataChanged()), this, SLOT(settingsChanged()))); \
 }
     BIND(FloatBinding::bindSliderAndTextbox(
         m_ui->snowRateSlider, m_ui->snowRateTextbox, settings.snowRate, 0.f, 50.f))
@@ -56,6 +57,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::settingsChanged() {
     std::cout << "settings changed" << std::endl;
+    std::cout << "snow rate: " << settings.snowRate << std::endl;
+    std::cout << "snow size: " << settings.snowSize << std::endl;
 }
 
 void MainWindow::throwSnowball() {
