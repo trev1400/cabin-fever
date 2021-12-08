@@ -16,10 +16,9 @@
 GLWidget::GLWidget(QGLFormat format, QWidget *parent)
     : QGLWidget(format, parent),
       m_program(0),
-      m_sphere(nullptr),
-      m_angleX(-0.5f),
-      m_angleY(0.5f),
-      m_zoom(4.f)
+      m_angleX(0.f),
+      m_angleY(0.f),
+      m_zoom(7.f)
 {}
 
 GLWidget::~GLWidget()
@@ -38,21 +37,12 @@ void GLWidget::initializeGL() {
 
     // Creates the shader program that will be used for drawing.
     m_program = ResourceLoader::createShaderProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
-
-    // Initialize sphere with radius 0.5 centered at origin.
-//    std::vector<GLfloat> sphereData = SPHERE_VERTEX_POSITIONS;
-//    m_sphere = std::make_unique<OpenGLShape>();
-//    m_sphere->setVertexData(&sphereData[0], sphereData.size(), VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLES, NUM_SPHERE_VERTICES);
-//    m_sphere->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
-//    m_sphere->setAttribute(ShaderAttrib::NORMAL, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, true);
-//    m_sphere->buildVAO();
-
     // initialise a rect
     std::vector<GLfloat> rectData = RECT_VERTEX_POSITIONS;
     m_rect = std::make_unique<OpenGLShape>();
     m_rect->setVertexData(&rectData[0], rectData.size(), VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLES, NUM_RECT_VERTICES);
     m_rect->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
-    m_rect->setAttribute(ShaderAttrib::NORMAL, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, true);
+//    m_rect->setAttribute(ShaderAttrib::NORMAL, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, true);
     m_rect->buildVAO();
 }
 
@@ -82,14 +72,23 @@ void GLWidget::paintGL() {
     glUniform1f(glGetUniformLocation(m_program, "specularIntensity"), 0.59f);
 
     // Draws a sphere at the origin.
-    model = glm::mat4(1.f);
+//    model = glm::mat4(1.f);
+    model = glm::rotate(-45.f, glm::vec3(0,1,0)) * glm::translate(glm::vec3(4, 0, 0));
     glUniformMatrix4fv(glGetUniformLocation(m_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
     glUniform3f(glGetUniformLocation(m_program, "color"),
                 1.f,
                 0.39f,
                 0.9f);
     rebuildMatrices();
-//    m_sphere->draw();
+    m_rect->draw();
+
+    model = glm::rotate(45.f, glm::vec3(0,1,0)) * glm::translate(glm::vec3(-4, 0, 0));
+    glUniformMatrix4fv(glGetUniformLocation(m_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniform3f(glGetUniformLocation(m_program, "color"),
+                1.f,
+                0.39f,
+                0.9f);
+    rebuildMatrices();
     m_rect->draw();
 
     glUseProgram(0);

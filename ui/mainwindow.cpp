@@ -42,9 +42,6 @@ void MainWindow::dataBind() {
         m_ui->snowSizeSlider, m_ui->snowSizeTextbox, settings.snowSize, 0.f, 50.f))
 
 #undef BIND
-
-   // make sure the aspect ratio updates when m_canvas3D changes size
-   // connect(m_canvas3D, SIGNAL(aspectRatioChanged()), this, SLOT(updateAspectRatio()));
 }
 
 MainWindow::~MainWindow()
