@@ -6,8 +6,7 @@
 #include "GL/glew.h"
 #include <QGLWidget>
 #include <QTimer>
-#include "lib/sphere.h"
-
+#include "lib/terrain.h"
 #include "glm/glm.hpp"            // glm::vec*, mat*, and basic glm functions
 #include "glm/gtx/transform.hpp"  // glm::translate, scale, rotate
 #include "glm/gtc/type_ptr.hpp" // glm::value_ptr
@@ -43,6 +42,8 @@ private:
     std::unique_ptr<OpenGLShape> m_ceiling;
     std::unique_ptr<OpenGLShape> m_floor;
     std::unique_ptr<OpenGLShape> m_window;
+
+    Terrain m_terrain;
 
     void rebuildMatrices();
     glm::mat4 m_view, m_projection;

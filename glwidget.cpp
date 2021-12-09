@@ -1,7 +1,6 @@
 #include "glwidget.h"
 
 #include "lib/sphere.h"
-#include "lib/rect.h"
 #include "lib/room.h"
 #include "lib/window.h"
 #include "lib/resourceloader.h"

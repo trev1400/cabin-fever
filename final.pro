@@ -24,6 +24,7 @@ win32 {
 SOURCES += ui/mainwindow.cpp \
     main.cpp \
     glew-1.10.0/src/glew.c \
+    terrain.cpp \
     ui/Databinding.cpp \
     ui/Settings.cpp \
     openglshape.cpp \
@@ -46,8 +47,8 @@ SOURCES += ui/mainwindow.cpp \
 
 
 HEADERS += ui_mainwindow.h \
-    lib/rect.h \
     lib/room.h \
+    lib/terrain.h \
     lib/window.h \
     ui/mainwindow.h \
     glew-1.10.0/include/GL/glew.h \
