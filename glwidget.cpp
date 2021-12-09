@@ -20,7 +20,7 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
       m_program(0),
       m_angleX(0.f),
       m_angleY(0.f),
-      m_zoom(0.5f)
+      m_zoom(0.1f)
 {}
 
 GLWidget::~GLWidget()
