@@ -2,6 +2,7 @@
 
 #include "lib/sphere.h"
 #include "lib/rect.h"
+#include "lib/room.h"
 #include "lib/resourceloader.h"
 #include "lib/errorchecker.h"
 #include "Settings.h"
@@ -25,6 +26,41 @@ GLWidget::~GLWidget()
 {
 }
 
+void GLWidget::initializeWall(std::unique_ptr<OpenGLShape> &wall, std::vector<GLfloat> vertices)
+{
+    wall->setVertexData(&vertices[0], vertices.size(), VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLES, NUM_WALL_VERTICES);
+    wall->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
+    wall->buildVAO();
+}
+
+void GLWidget::initializeRoom()
+{
+    // Initialize the room's walls, floor, and ceiling
+    std::vector<GLfloat> frontVertices = FRONT_WALL_VERTEX_POSITIONS;
+    m_frontWall = std::make_unique<OpenGLShape>();
+    initializeWall(m_frontWall, frontVertices);
+
+    std::vector<GLfloat> backVertices = BACK_WALL_VERTEX_POSITIONS;
+    m_backWall = std::make_unique<OpenGLShape>();
+    initializeWall(m_backWall, backVertices);
+
+    std::vector<GLfloat> leftVertices = LEFT_WALL_VERTEX_POSITIONS;
+    m_leftWall = std::make_unique<OpenGLShape>();
+    initializeWall(m_leftWall, leftVertices);
+
+    std::vector<GLfloat> rightVertices = RIGHT_WALL_VERTEX_POSITIONS;
+    m_rightWall = std::make_unique<OpenGLShape>();
+    initializeWall(m_rightWall, rightVertices);
+
+    std::vector<GLfloat> ceilingVertices = CEILING_VERTEX_POSITIONS;
+    m_ceiling = std::make_unique<OpenGLShape>();
+    initializeWall(m_ceiling, ceilingVertices);
+
+    std::vector<GLfloat> floorVertices = FLOOR_VERTEX_POSITIONS;
+    m_floor = std::make_unique<OpenGLShape>();
+    initializeWall(m_floor, floorVertices);
+}
+
 void GLWidget::initializeGL() {
     ResourceLoader::initializeGlew();
     resizeGL(width(), height());
@@ -37,13 +73,9 @@ void GLWidget::initializeGL() {
 
     // Creates the shader program that will be used for drawing.
     m_program = ResourceLoader::createShaderProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
-    // initialise a rect
-    std::vector<GLfloat> rectData = RECT_VERTEX_POSITIONS;
-    m_rect = std::make_unique<OpenGLShape>();
-    m_rect->setVertexData(&rectData[0], rectData.size(), VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLES, NUM_RECT_VERTICES);
-    m_rect->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
-//    m_rect->setAttribute(ShaderAttrib::NORMAL, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, true);
-    m_rect->buildVAO();
+
+    // Sets up the walls, floor, and ceiling
+    initializeRoom();
 }
 
 void GLWidget::paintGL() {
@@ -71,25 +103,32 @@ void GLWidget::paintGL() {
     glUniform1f(glGetUniformLocation(m_program, "diffuseIntensity"), 0.62f);
     glUniform1f(glGetUniformLocation(m_program, "specularIntensity"), 0.59f);
 
-    // Draws a sphere at the origin.
-//    model = glm::mat4(1.f);
-    model = glm::rotate(-45.f, glm::vec3(0,1,0)) * glm::translate(glm::vec3(4, 0, 0));
+    model = glm::translate(glm::vec3(0.f, 0.f, 4.f));
     glUniformMatrix4fv(glGetUniformLocation(m_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    glUniform3f(glGetUniformLocation(m_program, "color"),
-                1.f,
-                0.39f,
-                0.9f);
     rebuildMatrices();
-    m_rect->draw();
 
-    model = glm::rotate(45.f, glm::vec3(0,1,0)) * glm::translate(glm::vec3(-4, 0, 0));
-    glUniformMatrix4fv(glGetUniformLocation(m_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
     glUniform3f(glGetUniformLocation(m_program, "color"),
                 1.f,
                 0.39f,
                 0.9f);
-    rebuildMatrices();
-    m_rect->draw();
+    m_frontWall->draw();
+// Not going to draw back wall for now because it makes it easier to see what's going on inside the room
+//    m_backWall->draw();
+
+    glUniform3f(glGetUniformLocation(m_program, "color"),
+                0.f,
+                0.67f,
+                1.f);
+    m_leftWall->draw();
+    m_rightWall->draw();
+
+    glUniform3f(glGetUniformLocation(m_program, "color"),
+                0.67f,
+                1.f,
+                0.f);
+    m_ceiling->draw();
+    m_floor->draw();
+
 
     glUseProgram(0);
 }
