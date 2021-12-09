@@ -110,4 +110,11 @@ DISTFILES += \
     shaders/phong.frag \
     shaders/phong.vert \
     shaders/shader.frag \
-    shaders/shader.vert
+    shaders/shader.vert \
+    shaders/horizontalBlur.frag \
+    shaders/particles_draw.frag \
+    shaders/particles_draw.vert \
+    shaders/particles_update.frag \
+    shaders/quad.vert \
+    shaders/texture.frag \
+    shaders/verticalBlur.frag \
