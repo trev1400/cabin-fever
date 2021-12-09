@@ -2,6 +2,8 @@
 
 #include "lib/sphere.h"
 #include "lib/rect.h"
+#include "lib/room.h"
+#include "lib/window.h"
 #include "lib/resourceloader.h"
 #include "lib/errorchecker.h"
 #include "Settings.h"
@@ -25,12 +27,51 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
       m_firstPass(true), m_evenPass(true), m_numParticles(100),
       m_angleX(0.f),
       m_angleY(0.f),
-      m_zoom(7.f)
+      m_zoom(0.1f)
 {}
 
 GLWidget::~GLWidget()
 {
     glDeleteVertexArrays(1, &m_particlesVAO);
+}
+
+void GLWidget::initializeOpenGLShape(std::unique_ptr<OpenGLShape> &shape, std::vector<GLfloat> vertices, int numVertices)
+{
+    shape->setVertexData(&vertices[0], vertices.size(), VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLES, numVertices);
+    shape->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
+    shape->buildVAO();
+}
+
+void GLWidget::initializeRoom()
+{
+    // Initialize the room's walls, floor, and ceiling
+    std::vector<GLfloat> frontVertices = FRONT_WALL_VERTEX_POSITIONS;
+    m_frontWall = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_frontWall, frontVertices, NUM_QUAD_VERTICES);
+
+    std::vector<GLfloat> backVertices = BACK_WALL_VERTEX_POSITIONS;
+    m_backWall = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_backWall, backVertices, NUM_QUAD_VERTICES);
+
+    std::vector<GLfloat> leftVertices = LEFT_WALL_VERTEX_POSITIONS;
+    m_leftWall = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_leftWall, leftVertices, NUM_QUAD_VERTICES);
+
+    std::vector<GLfloat> rightVertices = RIGHT_WALL_VERTEX_POSITIONS;
+    m_rightWall = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_rightWall, rightVertices, NUM_QUAD_VERTICES);
+
+    std::vector<GLfloat> ceilingVertices = CEILING_VERTEX_POSITIONS;
+    m_ceiling = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_ceiling, ceilingVertices, NUM_QUAD_VERTICES);
+
+    std::vector<GLfloat> floorVertices = FLOOR_VERTEX_POSITIONS;
+    m_floor = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_floor, floorVertices, NUM_QUAD_VERTICES);
+
+    std::vector<GLfloat> windowVertices = WINDOW_VERTEX_POSITIONS;
+    m_window = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_window, windowVertices, NUM_WINDOW_VERTICES);
 }
 
 void GLWidget::initializeGL() {
@@ -88,6 +129,9 @@ void GLWidget::initializeGL() {
     // Print the max FBO dimension.
     GLint maxRenderBufferSize;
     glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE_EXT, &maxRenderBufferSize);
+
+    // Sets up the walls, floor, and ceiling
+    initializeRoom();
 }
 
 void GLWidget::paintGL() {
@@ -118,25 +162,32 @@ void GLWidget::paintGL() {
     glUniform1f(glGetUniformLocation(m_program, "diffuseIntensity"), 0.62f);
     glUniform1f(glGetUniformLocation(m_program, "specularIntensity"), 0.59f);
 
-    // Draws a sphere at the origin.
-//    model = glm::mat4(1.f);
-    model = glm::rotate(-45.f, glm::vec3(0,1,0)) * glm::translate(glm::vec3(4, 0, 0));
+    model = glm::translate(glm::vec3(0.f, 0.f, 0.f));
     glUniformMatrix4fv(glGetUniformLocation(m_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    glUniform3f(glGetUniformLocation(m_program, "color"),
-                1.f,
-                0.39f,
-                0.9f);
     rebuildMatrices();
-    m_rect->draw();
 
-    model = glm::rotate(45.f, glm::vec3(0,1,0)) * glm::translate(glm::vec3(-4, 0, 0));
-    glUniformMatrix4fv(glGetUniformLocation(m_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
     glUniform3f(glGetUniformLocation(m_program, "color"),
                 1.f,
                 0.39f,
                 0.9f);
-    rebuildMatrices();
-    m_rect->draw();
+    m_backWall->draw();
+    // Draws the window on the front wall. Window is made up of 4 quads
+    m_window->draw();
+
+    glUniform3f(glGetUniformLocation(m_program, "color"),
+                0.f,
+                0.67f,
+                1.f);
+    m_leftWall->draw();
+    m_rightWall->draw();
+
+    glUniform3f(glGetUniformLocation(m_program, "color"),
+                0.67f,
+                1.f,
+                0.f);
+    m_ceiling->draw();
+    m_floor->draw();
+
 
     glUseProgram(0);
     rectFBO->unbind();

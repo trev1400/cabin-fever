@@ -47,6 +47,8 @@ SOURCES += ui/mainwindow.cpp \
 
 HEADERS += ui_mainwindow.h \
     lib/rect.h \
+    lib/room.h \
+    lib/window.h \
     ui/mainwindow.h \
     glew-1.10.0/include/GL/glew.h \
     ui/Databinding.h \

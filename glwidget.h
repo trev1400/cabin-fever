@@ -34,6 +34,8 @@ protected:
     void wheelEvent(QWheelEvent *e);
 private:    
     void setParticleViewport();
+    void initializeRoom();
+    void initializeOpenGLShape(std::unique_ptr<OpenGLShape> &quad, std::vector<GLfloat> vertices, int numVertices);
 
     int m_width;
     int m_height;
@@ -61,6 +63,14 @@ private:
     int m_numParticles;
 
     std::unique_ptr<OpenGLShape> m_rect;
+    std::unique_ptr<OpenGLShape> m_leftWall;
+    std::unique_ptr<OpenGLShape> m_rightWall;
+    std::unique_ptr<OpenGLShape> m_frontWall;
+    std::unique_ptr<OpenGLShape> m_backWall;
+    std::unique_ptr<OpenGLShape> m_ceiling;
+    std::unique_ptr<OpenGLShape> m_floor;
+    std::unique_ptr<OpenGLShape> m_window;
+
     void rebuildMatrices();
     glm::mat4 m_view, m_projection;
 
