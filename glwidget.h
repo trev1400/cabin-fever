@@ -29,7 +29,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *e);
     void wheelEvent(QWheelEvent *e);
     void initializeRoom();
-    void initializeQuad(std::unique_ptr<OpenGLShape> &quad, std::vector<GLfloat> vertices);
+    void initializeOpenGLShape(std::unique_ptr<OpenGLShape> &quad, std::vector<GLfloat> vertices, int numVertices);
 private:
     /** ID for the shader program. */
     GLuint m_program;
@@ -42,10 +42,7 @@ private:
     std::unique_ptr<OpenGLShape> m_backWall;
     std::unique_ptr<OpenGLShape> m_ceiling;
     std::unique_ptr<OpenGLShape> m_floor;
-    std::unique_ptr<OpenGLShape> m_windowLeftPanel;
-    std::unique_ptr<OpenGLShape> m_windowRightPanel;
-    std::unique_ptr<OpenGLShape> m_windowTopPanel;
-    std::unique_ptr<OpenGLShape> m_windowBottomPanel;
+    std::unique_ptr<OpenGLShape> m_window;
 
     void rebuildMatrices();
     glm::mat4 m_view, m_projection;

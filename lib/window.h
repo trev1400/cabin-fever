@@ -1,68 +1,59 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#define NUM_QUAD_VERTICES 12
+#define NUM_WINDOW_VERTICES 48
 
-#define LEFT_PANEL_VERTEX_POSITIONS {\
-    /* INSIDE */     \
+#define WINDOW_VERTEX_POSITIONS {\
+    /* INSIDE LEFT */     \
     -1.7f, 1.5f, -2.f, \
     -1.7f, -1.5f, -2.f, \
     -2.f, -1.5f, -2.f, \
     -1.7f, 1.5f, -2.f, \
     -2.f, -1.5f, -2.f,\
     -2.f, 1.5f, -2.f, \
-    /* OUTSIDE */     \
+    /* OUTSIDE LEFT */     \
     -1.7f, 1.5f, -2.f, \
     -2.f, -1.5f, -2.f, \
     -1.7f, -1.5f, -2.f, \
     -1.7f, 1.5f, -2.f, \
     -2.f, 1.5f, -2.f, \
     -2.f, -1.5f, -2.f,\
-}
-
-#define RIGHT_PANEL_VERTEX_POSITIONS {\
-    /* INSIDE */     \
+    /* INSIDE RIGHT */     \
      2.f, 1.5f, -2.f, \
      2.f, -1.5f, -2.f, \
      1.7f, -1.5f, -2.f, \
      2.f, 1.5f, -2.f, \
      1.7f, -1.5f, -2.f,\
      1.7f, 1.5f, -2.f, \
-    /* OUTSIDE */     \
+    /* OUTSIDE RIGHT*/     \
     2.f, 1.5f, -2.f, \
     1.7f, -1.5f, -2.f, \
     2.f, -1.5f, -2.f, \
     2.f, 1.5f, -2.f, \
     1.7f, 1.5f, -2.f, \
     1.7f, -1.5f, -2.f,\
-}
-
-#define TOP_PANEL_VERTEX_POSITIONS {\
-    /* INSIDE */     \
+    /* INSIDE TOP */     \
      1.7f, 1.2f, -2.f, \
      -1.7f, 1.5f, -2.f, \
      1.7f, 1.5f, -2.f, \
      1.7f, 1.2f, -2.f, \
      -1.7f, 1.2f, -2.f,\
      -1.7f, 1.5f, -2.f, \
-    /* OUTSIDE */     \
+    /* OUTSIDE TOP */     \
     1.7f, 1.2f, -2.f, \
     1.7f, 1.5f, -2.f, \
     -1.7f, 1.5f, -2.f, \
     1.7f, 1.2f, -2.f, \
     -1.7f, 1.5f, -2.f, \
     -1.7f, 1.2f, -2.f,\
-}
-
-#define BOTTOM_PANEL_VERTEX_POSITIONS {\
-    /* INSIDE */     \
+    /* INSIDE BOTTOM */     \
      1.7f, -1.5f, -2.f, \
      -1.7f, -1.2f, -2.f, \
      1.7f, -1.2f, -2.f, \
      1.7f, -1.5f, -2.f, \
      -1.7f, -1.5f, -2.f,\
      -1.7f, -1.2f, -2.f, \
-    /* OUTSIDE */     \
+    /* OUTSIDE BOTTOM */     \
     1.7f, -1.5f, -2.f, \
     1.7f, -1.2f, -2.f, \
     -1.7f, -1.2f, -2.f, \
