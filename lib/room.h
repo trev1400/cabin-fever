@@ -1,7 +1,7 @@
 #ifndef ROOM_H
 #define ROOM_H
 
-#define NUM_WALL_VERTICES 12
+#define NUM_QUAD_VERTICES 12
 
 #define FRONT_WALL_VERTEX_POSITIONS {\
     /* FRONT INSIDE */     \

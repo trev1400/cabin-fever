@@ -3,6 +3,7 @@
 #include "lib/sphere.h"
 #include "lib/rect.h"
 #include "lib/room.h"
+#include "lib/window.h"
 #include "lib/resourceloader.h"
 #include "lib/errorchecker.h"
 #include "Settings.h"
@@ -26,11 +27,11 @@ GLWidget::~GLWidget()
 {
 }
 
-void GLWidget::initializeWall(std::unique_ptr<OpenGLShape> &wall, std::vector<GLfloat> vertices)
+void GLWidget::initializeQuad(std::unique_ptr<OpenGLShape> &quad, std::vector<GLfloat> vertices)
 {
-    wall->setVertexData(&vertices[0], vertices.size(), VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLES, NUM_WALL_VERTICES);
-    wall->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
-    wall->buildVAO();
+    quad->setVertexData(&vertices[0], vertices.size(), VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLES, NUM_QUAD_VERTICES);
+    quad->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
+    quad->buildVAO();
 }
 
 void GLWidget::initializeRoom()
@@ -38,27 +39,43 @@ void GLWidget::initializeRoom()
     // Initialize the room's walls, floor, and ceiling
     std::vector<GLfloat> frontVertices = FRONT_WALL_VERTEX_POSITIONS;
     m_frontWall = std::make_unique<OpenGLShape>();
-    initializeWall(m_frontWall, frontVertices);
+    initializeQuad(m_frontWall, frontVertices);
 
     std::vector<GLfloat> backVertices = BACK_WALL_VERTEX_POSITIONS;
     m_backWall = std::make_unique<OpenGLShape>();
-    initializeWall(m_backWall, backVertices);
+    initializeQuad(m_backWall, backVertices);
 
     std::vector<GLfloat> leftVertices = LEFT_WALL_VERTEX_POSITIONS;
     m_leftWall = std::make_unique<OpenGLShape>();
-    initializeWall(m_leftWall, leftVertices);
+    initializeQuad(m_leftWall, leftVertices);
 
     std::vector<GLfloat> rightVertices = RIGHT_WALL_VERTEX_POSITIONS;
     m_rightWall = std::make_unique<OpenGLShape>();
-    initializeWall(m_rightWall, rightVertices);
+    initializeQuad(m_rightWall, rightVertices);
 
     std::vector<GLfloat> ceilingVertices = CEILING_VERTEX_POSITIONS;
     m_ceiling = std::make_unique<OpenGLShape>();
-    initializeWall(m_ceiling, ceilingVertices);
+    initializeQuad(m_ceiling, ceilingVertices);
 
     std::vector<GLfloat> floorVertices = FLOOR_VERTEX_POSITIONS;
     m_floor = std::make_unique<OpenGLShape>();
-    initializeWall(m_floor, floorVertices);
+    initializeQuad(m_floor, floorVertices);
+
+    std::vector<GLfloat> windowLeftPanelVertices = LEFT_PANEL_VERTEX_POSITIONS;
+    m_windowLeftPanel = std::make_unique<OpenGLShape>();
+    initializeQuad(m_windowLeftPanel, windowLeftPanelVertices);
+
+    std::vector<GLfloat> windowRightPanelVertices = RIGHT_PANEL_VERTEX_POSITIONS;
+    m_windowRightPanel = std::make_unique<OpenGLShape>();
+    initializeQuad(m_windowRightPanel, windowRightPanelVertices);
+
+    std::vector<GLfloat> windowTopPanelVertices = TOP_PANEL_VERTEX_POSITIONS;
+    m_windowTopPanel = std::make_unique<OpenGLShape>();
+    initializeQuad(m_windowTopPanel, windowTopPanelVertices);
+
+    std::vector<GLfloat> windowBottomPanelVertices = BOTTOM_PANEL_VERTEX_POSITIONS;
+    m_windowBottomPanel = std::make_unique<OpenGLShape>();
+    initializeQuad(m_windowBottomPanel, windowBottomPanelVertices);
 }
 
 void GLWidget::initializeGL() {
@@ -111,9 +128,11 @@ void GLWidget::paintGL() {
                 1.f,
                 0.39f,
                 0.9f);
-    m_frontWall->draw();
-// Not going to draw back wall for now because it makes it easier to see what's going on inside the room
-//    m_backWall->draw();
+    // Draws the window on the back wall using 4 quads
+    m_windowLeftPanel->draw();
+    m_windowRightPanel->draw();
+    m_windowTopPanel->draw();
+    m_windowBottomPanel->draw();
 
     glUniform3f(glGetUniformLocation(m_program, "color"),
                 0.f,
