@@ -19,7 +19,7 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
       m_program(0),
       m_angleX(0.f),
       m_angleY(0.f),
-      m_zoom(7.f)
+      m_zoom(0.1f)
 {}
 
 GLWidget::~GLWidget()
@@ -107,7 +107,7 @@ void GLWidget::paintGL() {
     glUniform1f(glGetUniformLocation(m_program, "diffuseIntensity"), 0.62f);
     glUniform1f(glGetUniformLocation(m_program, "specularIntensity"), 0.59f);
 
-    model = glm::translate(glm::vec3(0.f, 0.f, 4.f));
+    model = glm::translate(glm::vec3(0.f, 0.f, 0.f));
     glUniformMatrix4fv(glGetUniformLocation(m_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
     rebuildMatrices();
 
@@ -115,7 +115,8 @@ void GLWidget::paintGL() {
                 1.f,
                 0.39f,
                 0.9f);
-    // Draws the window on the back wall. Window is made up of 4 quads
+    m_backWall->draw();
+    // Draws the window on the front wall. Window is made up of 4 quads
     m_window->draw();
 
     glUniform3f(glGetUniformLocation(m_program, "color"),
