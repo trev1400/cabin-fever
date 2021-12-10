@@ -14,7 +14,7 @@
 #include "iostream"
 #include "gl/shaders/ShaderAttribLocations.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include "lib/stb_image.h"
+#include "stb_image.h"
 
 #define PI 3.14159265f
 
@@ -169,14 +169,14 @@ void GLWidget::paintGL() {
 
     glBindTexture(GL_TEXTURE_2D, m_texture);
 
-    initializeTexture("/Users/trevoring/Desktop/container.jpeg");
+    initializeTexture("container.jpeg");
 
     m_backWall->draw();
     m_leftWall->draw();
     m_rightWall->draw();
     m_ceiling->draw();
 
-    initializeTexture("/Users/trevoring/Desktop/flooring.jpg");
+    initializeTexture("flooring.jpg");
 
     m_floor->draw();
     //     Draws the window on the front wall. Window is made up of 4 quads
