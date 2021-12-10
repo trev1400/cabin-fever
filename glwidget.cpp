@@ -4,6 +4,7 @@
 #include "lib/rect.h"
 #include "lib/room.h"
 #include "lib/window.h"
+#include "lib/windowpane.h"
 #include "lib/resourceloader.h"
 #include "lib/errorchecker.h"
 #include "Settings.h"
@@ -17,7 +18,17 @@
 
 GLWidget::GLWidget(QGLFormat format, QWidget *parent)
     : QGLWidget(format, parent),
-      m_program(0),
+      m_phongProgram(0),
+      m_glassProgram(0),
+      m_sphere(nullptr),
+      m_leftWall(nullptr),
+      m_rightWall(nullptr),
+      m_frontWall(nullptr),
+      m_backWall(nullptr),
+      m_ceiling(nullptr),
+      m_floor(nullptr),
+      m_window(nullptr),
+      m_windowPane(nullptr),
       m_angleX(0.f),
       m_angleY(0.f),
       m_zoom(0.1f)
@@ -31,6 +42,7 @@ void GLWidget::initializeOpenGLShape(std::unique_ptr<OpenGLShape> &shape, std::v
 {
     shape->setVertexData(&vertices[0], vertices.size(), VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLES, numVertices);
     shape->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
+    shape->setAttribute(ShaderAttrib::NORMAL, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, true);
     shape->buildVAO();
 }
 
@@ -64,6 +76,14 @@ void GLWidget::initializeRoom()
     std::vector<GLfloat> windowVertices = WINDOW_VERTEX_POSITIONS;
     m_window = std::make_unique<OpenGLShape>();
     initializeOpenGLShape(m_window, windowVertices, NUM_WINDOW_VERTICES);
+
+    std::vector<GLfloat> windowPaneVertices = WINDOW_PANE_VERTEX_POSITIONS;
+    m_windowPane = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_windowPane, windowPaneVertices, NUM_WINDOW_PANE_VERTICES);
+
+    std::vector<GLfloat> sphereVertices = SPHERE_VERTEX_POSITIONS;
+    m_sphere = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_sphere, sphereVertices, NUM_SPHERE_VERTICES);
 }
 
 void GLWidget::initializeGL() {
@@ -76,8 +96,11 @@ void GLWidget::initializeGL() {
     // Set the color to set the screen when the color buffer is cleared.
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    // Creates the shader program that will be used for drawing.
-    m_program = ResourceLoader::createShaderProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
+    // Set up the phong shader program
+    m_phongProgram = ResourceLoader::createShaderProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
+    // Set up glass shader program
+    m_glassProgram = ResourceLoader::createShaderProgram(":/shaders/glass.vert", ":/shaders/glass.frag");
+
 
     // Sets up the walls, floor, and ceiling
     initializeRoom();
@@ -88,31 +111,31 @@ void GLWidget::paintGL() {
 
     glm::mat4 model(1.f);
 
-    glUseProgram(m_program);
+    glUseProgram(m_phongProgram);
 
     // Sets projection and view matrix uniforms.
-    glUniformMatrix4fv(glGetUniformLocation(m_program, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
-    glUniformMatrix4fv(glGetUniformLocation(m_program, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
 
     // Sets uniforms that are controlled by the UI.
-    glUniform1f(glGetUniformLocation(m_program, "shininess"), 20.41f);
-    glUniform1f(glGetUniformLocation(m_program, "lightIntensity"), 5.f);
-    glUniform3f(glGetUniformLocation(m_program, "lightColor"),
+    glUniform1f(glGetUniformLocation(m_phongProgram, "shininess"), 20.41f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "lightIntensity"), 5.f);
+    glUniform3f(glGetUniformLocation(m_phongProgram, "lightColor"),
                 1.f,
                 1.f,
                 1.f);
-    glUniform1f(glGetUniformLocation(m_program, "attQuadratic"), 0.f);
-    glUniform1f(glGetUniformLocation(m_program, "attLinear"), 0.81f);
-    glUniform1f(glGetUniformLocation(m_program, "attConstant"), 2.16f);
-    glUniform1f(glGetUniformLocation(m_program, "ambientIntensity"), 0.28f);
-    glUniform1f(glGetUniformLocation(m_program, "diffuseIntensity"), 0.62f);
-    glUniform1f(glGetUniformLocation(m_program, "specularIntensity"), 0.59f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "attQuadratic"), 0.f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "attLinear"), 0.81f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "attConstant"), 2.16f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "ambientIntensity"), 0.28f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "diffuseIntensity"), 0.62f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "specularIntensity"), 0.59f);
 
     model = glm::translate(glm::vec3(0.f, 0.f, 0.f));
-    glUniformMatrix4fv(glGetUniformLocation(m_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
     rebuildMatrices();
 
-    glUniform3f(glGetUniformLocation(m_program, "color"),
+    glUniform3f(glGetUniformLocation(m_phongProgram, "color"),
                 1.f,
                 0.39f,
                 0.9f);
@@ -120,20 +143,44 @@ void GLWidget::paintGL() {
     // Draws the window on the front wall. Window is made up of 4 quads
     m_window->draw();
 
-    glUniform3f(glGetUniformLocation(m_program, "color"),
+    glUniform3f(glGetUniformLocation(m_phongProgram, "color"),
                 0.f,
                 0.67f,
                 1.f);
     m_leftWall->draw();
     m_rightWall->draw();
 
-    glUniform3f(glGetUniformLocation(m_program, "color"),
+    glUniform3f(glGetUniformLocation(m_phongProgram, "color"),
                 0.67f,
                 1.f,
                 0.f);
     m_ceiling->draw();
     m_floor->draw();
 
+    model = glm::translate(glm::vec3(0.f, 0.f, -15.f));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniform3f(glGetUniformLocation(m_phongProgram, "color"),
+                0.49f,
+                0.63f,
+                0.85f);
+    m_sphere->draw();
+
+    glUseProgram(0);
+
+    glUseProgram(m_glassProgram);
+
+    // Sets projection and view matrix uniforms.
+    glUniformMatrix4fv(glGetUniformLocation(m_glassProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
+    glUniformMatrix4fv(glGetUniformLocation(m_glassProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
+    glUniformMatrix4fv(glGetUniformLocation(m_glassProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniform1f(glGetUniformLocation(m_glassProgram, "r0"), 0.5f);
+    glUniform1f(glGetUniformLocation(m_glassProgram, "eta1D"), 0.77f);
+    glUniform3f(glGetUniformLocation(m_glassProgram, "eta"),
+                0.8f,
+                0.8f,
+                0.8f);
+    rebuildMatrices();
+    m_windowPane->draw();
 
     glUseProgram(0);
 }

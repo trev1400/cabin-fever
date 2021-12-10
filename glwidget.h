@@ -31,11 +31,11 @@ protected:
     void initializeRoom();
     void initializeOpenGLShape(std::unique_ptr<OpenGLShape> &quad, std::vector<GLfloat> vertices, int numVertices);
 private:
-    /** ID for the shader program. */
-    GLuint m_program;
+    /** ID for the shader programs. */
+    GLuint m_phongProgram;
+    GLuint m_glassProgram;
 
     std::unique_ptr<OpenGLShape> m_sphere;
-    std::unique_ptr<OpenGLShape> m_rect;
     std::unique_ptr<OpenGLShape> m_leftWall;
     std::unique_ptr<OpenGLShape> m_rightWall;
     std::unique_ptr<OpenGLShape> m_frontWall;
@@ -43,6 +43,7 @@ private:
     std::unique_ptr<OpenGLShape> m_ceiling;
     std::unique_ptr<OpenGLShape> m_floor;
     std::unique_ptr<OpenGLShape> m_window;
+    std::unique_ptr<OpenGLShape> m_windowPane;
 
     void rebuildMatrices();
     glm::mat4 m_view, m_projection;

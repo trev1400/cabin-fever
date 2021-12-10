@@ -49,6 +49,7 @@ HEADERS += ui_mainwindow.h \
     lib/rect.h \
     lib/room.h \
     lib/window.h \
+    lib/windowpane.h \
     ui/mainwindow.h \
     glew-1.10.0/include/GL/glew.h \
     ui/Databinding.h \
@@ -112,4 +113,6 @@ DISTFILES += \
     shaders/phong.frag \
     shaders/phong.vert \
     shaders/shader.frag \
-    shaders/shader.vert
+    shaders/shader.vert \
+    shaders/glass.frag \
+    shaders/glass.vert
