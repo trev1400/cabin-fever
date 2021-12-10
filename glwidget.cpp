@@ -74,6 +74,8 @@ void GLWidget::initializeRoom()
     initializeOpenGLShape(m_window, windowVertices, NUM_WINDOW_VERTICES);
 }
 
+
+
 void GLWidget::initializeGL() {
     ResourceLoader::initializeGlew();
     resizeGL(width(), height());
@@ -132,12 +134,13 @@ void GLWidget::initializeGL() {
 
     // Sets up the walls, floor, and ceiling
     initializeRoom();
+
 }
 
 void GLWidget::paintGL() {
-    auto rectFBO = std::make_shared<FBO>(1, FBO::DEPTH_STENCIL_ATTACHMENT::NONE, 1, 1);
+    //auto rectFBO = std::make_shared<FBO>(1, FBO::DEPTH_STENCIL_ATTACHMENT::NONE, 1, 1);
 
-    rectFBO->bind();
+    //rectFBO->bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glm::mat4 model(1.f);
@@ -190,7 +193,12 @@ void GLWidget::paintGL() {
 
 
     glUseProgram(0);
-    rectFBO->unbind();
+    std::cout << "draw" << std::endl;
+//    drawParticles();
+//    update();
+}
+
+void GLWidget::drawParticles() {
 
     auto prevFBO = m_evenPass ? m_particlesFBO1 : m_particlesFBO2;
     auto nextFBO = m_evenPass ? m_particlesFBO2 : m_particlesFBO1;
@@ -232,11 +240,10 @@ void GLWidget::paintGL() {
 
     m_firstPass = false;
     m_evenPass = !m_evenPass;
-    update();
 }
 
 void GLWidget::resizeGL(int w, int h) {
-    //glViewport(0, 0, w, h);
+//    glViewport(0, 0, w, h);
     m_width = w;
     m_height = h;
 
@@ -248,10 +255,11 @@ void GLWidget::resizeGL(int w, int h) {
 }
 
 void GLWidget::setParticleViewport() {
-    int maxDim = std::max(m_width, m_height);
-    int x = (m_width - maxDim) / 2.0f;
-    int y = (m_height - maxDim) / 2.0f;
-    glViewport(x, y, maxDim, maxDim);
+    glViewport(0, 0, m_width, m_height);
+//    int maxDim = std::max(m_width, m_height);
+//    int x = (m_width - maxDim) / 2.0f;
+//    int y = (m_height - maxDim) / 2.0f;
+//    glViewport(x, y, maxDim, maxDim);
 }
 
 

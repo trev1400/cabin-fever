@@ -35,6 +35,7 @@ protected:
 private:    
     void setParticleViewport();
     void initializeRoom();
+    void drawParticles();
     void initializeOpenGLShape(std::unique_ptr<OpenGLShape> &quad, std::vector<GLfloat> vertices, int numVertices);
 
     int m_width;
