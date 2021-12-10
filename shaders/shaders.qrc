@@ -11,5 +11,7 @@
         <file>verticalBlur.frag</file>
         <file>quad.vert</file>
         <file>texture.frag</file>
+        <file>glass.frag</file>
+        <file>glass.vert</file>
     </qresource>
 </RCC>

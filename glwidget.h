@@ -44,6 +44,7 @@ private:
     /** ID for the shader program. */
     GLuint m_program;
     GLuint m_phongProgram;
+    GLuint m_glassProgram;
     GLuint m_textureProgram;
     GLuint m_horizontalBlurProgram;
     GLuint m_verticalBlurProgram;
@@ -71,6 +72,7 @@ private:
     std::unique_ptr<OpenGLShape> m_ceiling;
     std::unique_ptr<OpenGLShape> m_floor;
     std::unique_ptr<OpenGLShape> m_window;
+    std::unique_ptr<OpenGLShape> m_windowPane;
 
     void rebuildMatrices();
     glm::mat4 m_view, m_projection;
