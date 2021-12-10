@@ -30,7 +30,7 @@ SOURCES += ui/mainwindow.cpp \
     openglshape.cpp \
     glwidget.cpp \
     lib/RGBA.cpp \
-    lib/ResourceLoader.cpp \
+    lib/resourceloader.cpp \
     gl/GLDebug.cpp \
     gl/datatype/VBOAttribMarker.cpp \
     gl/datatype/VBO.cpp \
@@ -47,9 +47,13 @@ SOURCES += ui/mainwindow.cpp \
 
 
 HEADERS += ui_mainwindow.h \
+    stb_image.h \
+    lib/rect.h \
     lib/room.h \
     lib/terrain.h \
     lib/window.h \
+    lib/windowpane.h \
+    lib/resourceloader.h \
     ui/mainwindow.h \
     glew-1.10.0/include/GL/glew.h \
     ui/Databinding.h \
@@ -113,4 +117,10 @@ DISTFILES += \
     shaders/phong.frag \
     shaders/phong.vert \
     shaders/shader.frag \
-    shaders/shader.vert
+    shaders/shader.vert \
+    shaders/glass.frag \
+    shaders/glass.vert \
+    shaders/terrain.frag \
+    shaders/terrain.vert \
+    shaders/texture.frag \
+    shaders/texture.vert

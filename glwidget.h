@@ -29,13 +29,17 @@ protected:
     void wheelEvent(QWheelEvent *e);
     void initializeRoom();
     void initializeTerrain();
-    void initializeOpenGLShape(std::unique_ptr<OpenGLShape> &quad, std::vector<GLfloat> vertices, int numVertices);
+    void initializeOpenGLShape(std::unique_ptr<OpenGLShape> &quad, std::vector<GLfloat> vertices, int numVertices, bool hasTexture);
+    void initializeTexture(std::string texturePath);
+
 private:
-    /** ID for the shader program. */
-    GLuint m_program;
+    /** ID for the shader programs. */
+    GLuint m_phongProgram;
+    GLuint m_glassProgram;
+    GLuint m_textureProgram;
+    GLuint m_terrainProgram;
 
     std::unique_ptr<OpenGLShape> m_sphere;
-    std::unique_ptr<OpenGLShape> m_rect;
     std::unique_ptr<OpenGLShape> m_leftWall;
     std::unique_ptr<OpenGLShape> m_rightWall;
     std::unique_ptr<OpenGLShape> m_frontWall;
@@ -43,6 +47,9 @@ private:
     std::unique_ptr<OpenGLShape> m_ceiling;
     std::unique_ptr<OpenGLShape> m_floor;
     std::unique_ptr<OpenGLShape> m_window;
+    std::unique_ptr<OpenGLShape> m_windowPane;
+
+    unsigned int m_texture;
 
     Terrain m_terrain;
 
