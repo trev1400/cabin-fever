@@ -11,8 +11,8 @@ out vec3 CameraSpace_normal;   // eye-space normal
 out vec2 texCoord;
 
 void main() {
-    CameraSpace_position = (view * model * vec4(ObjectSpace_position, 1.0)).xyz;
-    CameraSpace_normal = (view * model * vec4(ObjectSpace_normal, 0.0)).xyz;
+    CameraSpace_position = vec3(view * model * vec4(ObjectSpace_position, 1.0));
+    CameraSpace_normal = vec3(view * model * vec4(ObjectSpace_normal, 0.0));
 
     gl_Position = projection * view * model * vec4(ObjectSpace_position, 1.0);
 

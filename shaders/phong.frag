@@ -72,7 +72,7 @@ void main(){
     vec3 specular = vec3(0.f);
 
     for (int i = 0; i < lights.length(); i++) {
-        vec3 CameraSpace_toLight = (view*vec4(lights[i],1)).xyz - CameraSpace_position;
+        vec3 CameraSpace_toLight = vec3(view*vec4(lights[i],1)) - CameraSpace_position;
         vec3 CameraSpace_toLight_n = normalize(CameraSpace_toLight); // normalized, camera-space vector to light
         vec3 CameraSpace_toEye_n = -normalize(CameraSpace_position); // normalized, camera-space vector to eye
         vec3 CameraSpace_normal_n = normalize(CameraSpace_normal);   // normalized, camera-space normal

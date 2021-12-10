@@ -22,6 +22,7 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
     : QGLWidget(format, parent),
       m_phongProgram(0),
       m_glassProgram(0),
+      m_textureProgram(0),
       m_sphere(nullptr),
       m_leftWall(nullptr),
       m_rightWall(nullptr),
@@ -106,7 +107,7 @@ void GLWidget::initializeRoom()
 
     std::vector<GLfloat> windowPaneVertices = WINDOW_PANE_VERTEX_POSITIONS;
     m_windowPane = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_windowPane, windowPaneVertices, NUM_WINDOW_PANE_VERTICES, false);
+    initializeOpenGLShape(m_windowPane, windowPaneVertices, NUM_WINDOW_PANE_VERTICES, true);
 
     std::vector<GLfloat> sphereVertices = SPHERE_VERTEX_POSITIONS;
     m_sphere = std::make_unique<OpenGLShape>();
@@ -125,9 +126,10 @@ void GLWidget::initializeGL() {
 
     // Set up the phong shader program
     m_phongProgram = ResourceLoader::createShaderProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
+    // Set up texture shader program
+    m_textureProgram = ResourceLoader::createShaderProgram(":/shaders/texture.vert", ":/shaders/texture.frag");
     // Set up glass shader program
     m_glassProgram = ResourceLoader::createShaderProgram(":/shaders/glass.vert", ":/shaders/glass.frag");
-
 
     // Sets up the walls, floor, and ceiling
     initializeRoom();
@@ -179,9 +181,8 @@ void GLWidget::paintGL() {
     initializeTexture("flooring.jpg");
 
     m_floor->draw();
-    //     Draws the window on the front wall. Window is made up of 4 quads
+    // Draws the window on the front wall. Window is made up of 4 quads
     m_window->draw();
-
 
     model = glm::translate(glm::vec3(0.f, 0.f, -15.f));
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
@@ -191,9 +192,9 @@ void GLWidget::paintGL() {
                 0.85f);
     m_sphere->draw();
 
-    glUseProgram(0);
-
     glUseProgram(m_glassProgram);
+
+    model = glm::translate(glm::vec3(0.f, 0.f, 0.f));
 
     // Sets projection and view matrix uniforms.
     glUniformMatrix4fv(glGetUniformLocation(m_glassProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
@@ -206,6 +207,7 @@ void GLWidget::paintGL() {
                 0.8f,
                 0.8f);
     rebuildMatrices();
+
     m_windowPane->draw();
 
     glUseProgram(0);

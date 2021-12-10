@@ -35,6 +35,7 @@ private:
     /** ID for the shader programs. */
     GLuint m_phongProgram;
     GLuint m_glassProgram;
+    GLuint m_textureProgram;
 
     std::unique_ptr<OpenGLShape> m_sphere;
     std::unique_ptr<OpenGLShape> m_leftWall;

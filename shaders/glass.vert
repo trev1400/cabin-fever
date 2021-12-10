@@ -13,7 +13,7 @@ uniform mat4 model;
 
 void main()
 {
-    vertex = ((view*model)*(vec4(position, 1.0))).xyz;
+    vertex = vec3((view*model)*(vec4(position, 1.0)));
     eyeNormal = normalize(mat3(transpose(inverse(view*model))) * normal);
     vertexToCamera = -normalize(vertex);
     gl_Position = projection*view*model*vec4(position,1.0);

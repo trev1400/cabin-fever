@@ -117,4 +117,6 @@ DISTFILES += \
     shaders/shader.frag \
     shaders/shader.vert \
     shaders/glass.frag \
-    shaders/glass.vert
+    shaders/glass.vert \
+    shaders/texture.frag \
+    shaders/texture.vert
