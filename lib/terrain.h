@@ -1,7 +1,6 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#define GLM_FORCE_RADIANS
 #include "glm/glm.hpp"            // glm::vec*, mat*, and basic glm functions
 #include "glm/gtx/transform.hpp"  // glm::translate, scale, rotate
 #include "glm/gtc/type_ptr.hpp"   // glm::value_ptr
@@ -24,6 +23,7 @@ private:
     glm::vec3 getPosition(int row, int col);
     glm::vec3 getNormal(int row, int col);
     const float m_numRows, m_numCols;
+    const int m_roomXRadius = 9, m_roomYRadius = 8; // room width, length
     const bool m_isFilledIn;
 };
 

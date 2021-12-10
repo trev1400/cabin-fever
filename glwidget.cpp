@@ -33,6 +33,25 @@ void GLWidget::initializeOpenGLShape(std::unique_ptr<OpenGLShape> &shape, std::v
     shape->buildVAO();
 }
 
+void GLWidget::initializeGL() {
+    ResourceLoader::initializeGlew();
+    resizeGL(width(), height());
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+
+    // Set the color to set the screen when the color buffer is cleared.
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+    // Creates the shader program that will be used for drawing.
+    m_program = ResourceLoader::createShaderProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
+
+    // Sets up the walls, floor, and ceiling
+    initializeRoom();
+    // set up terrain
+    initializeTerrain();
+}
+
 void GLWidget::initializeRoom()
 {
     // Initialize the room's walls, floor, and ceiling
@@ -65,21 +84,16 @@ void GLWidget::initializeRoom()
     initializeOpenGLShape(m_window, windowVertices, NUM_WINDOW_VERTICES);
 }
 
-void GLWidget::initializeGL() {
-    ResourceLoader::initializeGlew();
-    resizeGL(width(), height());
-
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-
-    // Set the color to set the screen when the color buffer is cleared.
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-    // Creates the shader program that will be used for drawing.
-    m_program = ResourceLoader::createShaderProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
-
-    // Sets up the walls, floor, and ceiling
-    initializeRoom();
+void GLWidget::initializeTerrain() {
+    std::vector<glm::vec3> terrainVertices = m_terrain.init();
+    glPolygonMode(GL_FRONT_AND_BACK, m_terrain.isFilledIn() ? GL_FILL : GL_LINE);
+    // Initialize openGLShape.
+    m_terrain.openGLShape = std::make_unique<OpenGLShape>();
+    m_terrain.openGLShape->setVertexData(&terrainVertices[0][0], terrainVertices.size() * 3, VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLE_STRIP, 2 * terrainVertices.size());
+    m_terrain.openGLShape->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
+    m_terrain.openGLShape->setAttribute(ShaderAttrib::NORMAL, 3, sizeof(glm::vec3), VBOAttribMarker::DATA_TYPE::FLOAT, false);
+    m_terrain.openGLShape->buildVAO();
+//    rebuildMatrices();
 }
 
 void GLWidget::paintGL() {
@@ -96,10 +110,7 @@ void GLWidget::paintGL() {
     // Sets uniforms that are controlled by the UI.
     glUniform1f(glGetUniformLocation(m_program, "shininess"), 20.41f);
     glUniform1f(glGetUniformLocation(m_program, "lightIntensity"), 5.f);
-    glUniform3f(glGetUniformLocation(m_program, "lightColor"),
-                1.f,
-                1.f,
-                1.f);
+    glUniform3f(glGetUniformLocation(m_program, "lightColor"), 1.f, 1.f, 1.f);
     glUniform1f(glGetUniformLocation(m_program, "attQuadratic"), 0.f);
     glUniform1f(glGetUniformLocation(m_program, "attLinear"), 0.81f);
     glUniform1f(glGetUniformLocation(m_program, "attConstant"), 2.16f);
@@ -111,30 +122,24 @@ void GLWidget::paintGL() {
     glUniformMatrix4fv(glGetUniformLocation(m_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
     rebuildMatrices();
 
-    glUniform3f(glGetUniformLocation(m_program, "color"),
-                1.f,
-                0.39f,
-                0.9f);
+    glUniform3f(glGetUniformLocation(m_program, "color"), 1.f, 0.39f, 0.9f);
     m_backWall->draw();
-    // Draws the window on the front wall. Window is made up of 4 quads
+//     Draws the window on the front wall. Window is made up of 4 quads
     m_window->draw();
 
-    glUniform3f(glGetUniformLocation(m_program, "color"),
-                0.f,
-                0.67f,
-                1.f);
+    glUniform3f(glGetUniformLocation(m_program, "color"), 0.f, 0.67f, 1.f);
     m_leftWall->draw();
     m_rightWall->draw();
 
-    glUniform3f(glGetUniformLocation(m_program, "color"),
-                0.67f,
-                1.f,
-                0.f);
+    glUniform3f(glGetUniformLocation(m_program, "color"), 0.67f, 1.f, 0.f);
     m_ceiling->draw();
     m_floor->draw();
 
+    // Draw terrain.
+    glUniform3f(glGetUniformLocation(m_program, "color"), 0.90f, 0.90f, 0.90f);
+//    m_terrain.draw();
 
-    glUseProgram(0);
+    glUseProgram(0); // unbind
 }
 
 void GLWidget::resizeGL(int w, int h) {

@@ -28,6 +28,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *e);
     void wheelEvent(QWheelEvent *e);
     void initializeRoom();
+    void initializeTerrain();
     void initializeOpenGLShape(std::unique_ptr<OpenGLShape> &quad, std::vector<GLfloat> vertices, int numVertices);
 private:
     /** ID for the shader program. */

@@ -28,9 +28,16 @@ glm::vec3 Terrain::getPosition(int row, int col)
 {
 
     glm::vec3 position;
-    position.x = position.x = 10 * row/m_numRows - 5;
+    position.x = 60 * row/m_numRows - 30; // centers around origin
     position.y = 0;
-    position.z = position.z = 10 * col/m_numCols - 5;
+    position.z = 60 * col/m_numCols - 30;
+
+    if (position.x <= m_roomXRadius && position.x >= -m_roomXRadius) {
+        if (position.z <= m_roomYRadius && position.z >= m_roomYRadius) {
+            return position; // dont render terrain if is in room dimensions
+        }
+    }
+//    std::cout << "pos (x,z):  (" << position.x << ", " << position.z << ")" << std::endl;
 
     int scale = 5;
 
@@ -51,8 +58,6 @@ glm::vec3 Terrain::getPosition(int row, int col)
         float bicubic_row = 3.0*pow(row_frac,2) - 2.0*pow(row_frac,3);
 
         float height = (glm::mix(glm::mix(A, B, bicubic_col), glm::mix(C, D, bicubic_col), bicubic_row)) / pow(2, i);
-//        std::cout<<"height:"<< height << std::endl;
-
         position.y += height;
 
         scale = scale * 2;
@@ -68,12 +73,16 @@ glm::vec3 Terrain::getPosition(int row, int col)
  */
 glm::vec3 Terrain::getNormal(int row, int col)
 {
-    // TODO: Compute the normal at the given row and column using the positions
-    //       of the neighboring vertices.
-
     glm::vec3 coords = getPosition(row, col);
 
-    glm::vec3 neighbours[8]; // is there memory leak here??
+    if (coords.x <= m_roomXRadius && coords.x >= -m_roomXRadius) {
+        if (coords.z <= m_roomYRadius && coords.z >= m_roomYRadius) {
+            return glm::vec3({0.f, 1.f, 0.f}); // dont render terrain if is in room dimensions
+        }
+    }
+//    std::cout << "pos (x,z):  (" << coords.x << ", " << coords.z << ")" << std::endl;
+
+    glm::vec3 neighbours[8];
     neighbours[0] = getPosition(row, col+1) - coords;
     neighbours[1] = getPosition(row+1, col+1) - coords;
     neighbours[2] = getPosition(row+1, col) - coords;
