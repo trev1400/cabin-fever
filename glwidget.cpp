@@ -13,6 +13,8 @@
 #include "openglshape.h"
 #include "iostream"
 #include "gl/shaders/ShaderAttribLocations.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "lib/stb_image.h"
 
 #define PI 3.14159265f
 
@@ -38,12 +40,37 @@ GLWidget::~GLWidget()
 {
 }
 
-void GLWidget::initializeOpenGLShape(std::unique_ptr<OpenGLShape> &shape, std::vector<GLfloat> vertices, int numVertices)
+void GLWidget::initializeOpenGLShape(std::unique_ptr<OpenGLShape> &shape, std::vector<GLfloat> vertices, int numVertices, bool hasTexture)
 {
     shape->setVertexData(&vertices[0], vertices.size(), VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLES, numVertices);
     shape->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
     shape->setAttribute(ShaderAttrib::NORMAL, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, true);
+    if (hasTexture) {
+        shape->setAttribute(ShaderAttrib::TEXCOORD0, 2, 3*sizeof(GLfloat), VBOAttribMarker::DATA_TYPE::FLOAT, false);
+    }
     shape->buildVAO();
+}
+
+void GLWidget::initializeTexture(std::string texturePath)
+{
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDeleteTextures(1, &m_texture);
+    glGenTextures(1, &m_texture);
+    glBindTexture(GL_TEXTURE_2D, m_texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width, height, numChannels;
+    unsigned char *data = stbi_load(texturePath.c_str(), &width, &height, &numChannels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
 }
 
 void GLWidget::initializeRoom()
@@ -51,39 +78,39 @@ void GLWidget::initializeRoom()
     // Initialize the room's walls, floor, and ceiling
     std::vector<GLfloat> frontVertices = FRONT_WALL_VERTEX_POSITIONS;
     m_frontWall = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_frontWall, frontVertices, NUM_QUAD_VERTICES);
+    initializeOpenGLShape(m_frontWall, frontVertices, NUM_QUAD_VERTICES, true);
 
     std::vector<GLfloat> backVertices = BACK_WALL_VERTEX_POSITIONS;
     m_backWall = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_backWall, backVertices, NUM_QUAD_VERTICES);
+    initializeOpenGLShape(m_backWall, backVertices, NUM_QUAD_VERTICES, true);
 
     std::vector<GLfloat> leftVertices = LEFT_WALL_VERTEX_POSITIONS;
     m_leftWall = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_leftWall, leftVertices, NUM_QUAD_VERTICES);
+    initializeOpenGLShape(m_leftWall, leftVertices, NUM_QUAD_VERTICES, true);
 
     std::vector<GLfloat> rightVertices = RIGHT_WALL_VERTEX_POSITIONS;
     m_rightWall = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_rightWall, rightVertices, NUM_QUAD_VERTICES);
+    initializeOpenGLShape(m_rightWall, rightVertices, NUM_QUAD_VERTICES, true);
 
     std::vector<GLfloat> ceilingVertices = CEILING_VERTEX_POSITIONS;
     m_ceiling = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_ceiling, ceilingVertices, NUM_QUAD_VERTICES);
+    initializeOpenGLShape(m_ceiling, ceilingVertices, NUM_QUAD_VERTICES, true);
 
     std::vector<GLfloat> floorVertices = FLOOR_VERTEX_POSITIONS;
     m_floor = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_floor, floorVertices, NUM_QUAD_VERTICES);
+    initializeOpenGLShape(m_floor, floorVertices, NUM_QUAD_VERTICES, true);
 
     std::vector<GLfloat> windowVertices = WINDOW_VERTEX_POSITIONS;
     m_window = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_window, windowVertices, NUM_WINDOW_VERTICES);
+    initializeOpenGLShape(m_window, windowVertices, NUM_WINDOW_VERTICES, true);
 
     std::vector<GLfloat> windowPaneVertices = WINDOW_PANE_VERTEX_POSITIONS;
     m_windowPane = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_windowPane, windowPaneVertices, NUM_WINDOW_PANE_VERTICES);
+    initializeOpenGLShape(m_windowPane, windowPaneVertices, NUM_WINDOW_PANE_VERTICES, false);
 
     std::vector<GLfloat> sphereVertices = SPHERE_VERTEX_POSITIONS;
     m_sphere = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_sphere, sphereVertices, NUM_SPHERE_VERTICES);
+    initializeOpenGLShape(m_sphere, sphereVertices, NUM_SPHERE_VERTICES, false);
 }
 
 void GLWidget::initializeGL() {
@@ -136,26 +163,25 @@ void GLWidget::paintGL() {
     rebuildMatrices();
 
     glUniform3f(glGetUniformLocation(m_phongProgram, "color"),
-                1.f,
-                0.39f,
-                0.9f);
-    m_backWall->draw();
-    // Draws the window on the front wall. Window is made up of 4 quads
-    m_window->draw();
+                0.25f,
+                0.2f,
+                0.2f);
 
-    glUniform3f(glGetUniformLocation(m_phongProgram, "color"),
-                0.f,
-                0.67f,
-                1.f);
+    glBindTexture(GL_TEXTURE_2D, m_texture);
+
+    initializeTexture("/Users/trevoring/Desktop/container.jpeg");
+
+    m_backWall->draw();
     m_leftWall->draw();
     m_rightWall->draw();
-
-    glUniform3f(glGetUniformLocation(m_phongProgram, "color"),
-                0.67f,
-                1.f,
-                0.f);
     m_ceiling->draw();
+
+    initializeTexture("/Users/trevoring/Desktop/flooring.jpg");
+
     m_floor->draw();
+    //     Draws the window on the front wall. Window is made up of 4 quads
+    m_window->draw();
+
 
     model = glm::translate(glm::vec3(0.f, 0.f, -15.f));
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));

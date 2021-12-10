@@ -48,6 +48,7 @@ SOURCES += ui/mainwindow.cpp \
 HEADERS += ui_mainwindow.h \
     lib/rect.h \
     lib/room.h \
+    lib/stb_image.h \
     lib/window.h \
     lib/windowpane.h \
     ui/mainwindow.h \
