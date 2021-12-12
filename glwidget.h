@@ -30,8 +30,7 @@ protected:
     void initializeRoom();
     void initializeTerrain();
     void initializeOpenGLShape(std::unique_ptr<OpenGLShape> &quad, std::vector<GLfloat> vertices, int numVertices, bool hasTexture);
-    void initializeTexture(std::string texturePath);
-
+    void initializeTexture(std::string texturePath, bool hasAlpha);
 private:
     /** ID for the shader programs. */
     GLuint m_phongProgram;
@@ -42,11 +41,13 @@ private:
     std::unique_ptr<OpenGLShape> m_sphere;
     std::unique_ptr<OpenGLShape> m_leftWall;
     std::unique_ptr<OpenGLShape> m_rightWall;
-    std::unique_ptr<OpenGLShape> m_frontWall;
     std::unique_ptr<OpenGLShape> m_backWall;
     std::unique_ptr<OpenGLShape> m_ceiling;
     std::unique_ptr<OpenGLShape> m_floor;
-    std::unique_ptr<OpenGLShape> m_window;
+    std::unique_ptr<OpenGLShape> m_windowSidePanels;
+    std::unique_ptr<OpenGLShape> m_windowLowerPanel;
+    std::unique_ptr<OpenGLShape> m_windowUpperPanel;
+    std::unique_ptr<OpenGLShape> m_windowFrame;
     std::unique_ptr<OpenGLShape> m_windowPane;
 
     unsigned int m_texture;

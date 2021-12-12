@@ -29,16 +29,13 @@ void main()
     vec3 greenRefractedVec = vec3(view * vec4(refract(cameraToVertex, n, eta.g), 0.0));
     vec3 blueRefractedVec = vec3(view * vec4(refract(cameraToVertex, n, eta.b), 0.0));
 
-//    float r = texture(envMap, redRefractedVec).r;
-//    float g = texture(envMap, greenRefractedVec).g;
-//    float b = texture(envMap, blueRefractedVec).b;
-    float r = 1.0;
-    float g = 1.0;
-    float b = 1.0;
+    float r = texture(envMap, redRefractedVec).r;
+    float g = texture(envMap, greenRefractedVec).g;
+    float b = texture(envMap, blueRefractedVec).b;
 
-    vec4 refractionColor = vec4(r, g, b, 1.0);
+    vec4 refractionColor = vec4(r, g, b, 0.5);
 
-    float F = ((r0 + (1 - r0) * pow(1 - max(0, dot(n, vertexToCamera)), 5.0)) / M_PI);
+    float F = (r0 + (1 - r0) * pow(1 - max(0, dot(n, vertexToCamera)), 5.0));
 
     fragColor = mix(refractionColor, reflectionColor, F);
 }
