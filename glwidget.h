@@ -11,7 +11,11 @@
 #include "glm/gtx/transform.hpp"  // glm::translate, scale, rotate
 #include "glm/gtc/type_ptr.hpp" // glm::value_ptr
 
+#include "gl/datatype/FBO.h"
+
 class OpenGLShape;
+
+using namespace CS123::GL;
 
 class GLWidget : public QGLWidget {
     Q_OBJECT
@@ -29,14 +33,22 @@ protected:
     void wheelEvent(QWheelEvent *e);
     void initializeRoom();
     void initializeTerrain();
+    void initializeParticles();
     void initializeOpenGLShape(std::unique_ptr<OpenGLShape> &quad, std::vector<GLfloat> vertices, int numVertices, bool hasTexture);
     void initializeTexture(std::string texturePath, bool hasAlpha);
-private:
+    void drawParticles();
+    void setParticleViewport();
+private:  
+    int m_width;
+    int m_height;
+
     /** ID for the shader programs. */
     GLuint m_phongProgram;
     GLuint m_glassProgram;
     GLuint m_textureProgram;
     GLuint m_terrainProgram;
+    GLuint m_particleUpdateProgram;
+    GLuint m_particleDrawProgram;
 
     std::unique_ptr<OpenGLShape> m_sphere;
     std::unique_ptr<OpenGLShape> m_leftWall;
@@ -53,6 +65,15 @@ private:
     unsigned int m_texture;
 
     Terrain m_terrain;
+
+    std::unique_ptr<OpenGLShape> m_quad;
+
+    GLuint m_particlesVAO;
+    std::shared_ptr<FBO> m_particlesFBO1;
+    std::shared_ptr<FBO> m_particlesFBO2;
+    bool m_firstPass;
+    bool m_evenPass;
+    int m_numParticles;
 
     void rebuildMatrices();
     glm::mat4 m_view, m_projection;
