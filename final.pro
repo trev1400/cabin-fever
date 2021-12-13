@@ -47,12 +47,12 @@ SOURCES += ui/mainwindow.cpp \
 
 
 HEADERS += ui_mainwindow.h \
+    lib/window.h \
     stb_image.h \
     lib/rect.h \
     lib/room.h \
     lib/terrain.h \
     lib/window.h \
-    lib/windowpane.h \
     lib/resourceloader.h \
     ui/mainwindow.h \
     glew-1.10.0/include/GL/glew.h \
@@ -78,7 +78,6 @@ HEADERS += ui_mainwindow.h \
     lib/ResourceLoader.h \
     lib/CS123SceneData.h \
     lib/sphere.h \
-
 
 
 FORMS += ui/mainwindow.ui
