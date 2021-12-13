@@ -64,7 +64,7 @@ void GLWidget::initializeGL() {
 
     // Creates the shader program that will be used for drawing.
     m_phongProgram = ResourceLoader::createShaderProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
-    m_terrainProgram = ResourceLoader::createShaderProgram(":/shaders/terrain.vert", ":/shaders/terrain.frag");
+//    m_terrainProgram = ResourceLoader::createShaderProgram(":/shaders/terrain.vert", ":/shaders/terrain.frag");
 
     initializeRoom(); // Sets up the walls, floor, and ceiling
     initializeTerrain(); // set up terrain
@@ -188,13 +188,14 @@ void GLWidget::paintGL() {
     rebuildMatrices();
     m_windowPane->draw();
 
-    // Draw terrain.
-//    glUseProgram(m_phongProgram);
-    // Set uniforms.
-//    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-//    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
-//    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
-//    m_terrain.draw();
+     Draw terrain.
+    glUseProgram(m_phongProgram);
+     Set uniforms.
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
+    glUniform3f(glGetUniformLocation(m_phongProgram, "color"), 0.90f, 0.90f, 0.90f);
+    m_terrain.draw();
 
     glUseProgram(0); // unbind
 }
