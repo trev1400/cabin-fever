@@ -42,7 +42,7 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
       m_particlesFBO2(nullptr),
       m_firstPass(true),
       m_evenPass(true),
-      m_numParticles(100),
+      m_numParticles(200),
       m_angleX(0.f),
       m_angleY(0.f),
       m_zoom(0.1f)
@@ -81,8 +81,8 @@ void GLWidget::initializeGL() {
     m_particleUpdateProgram = ResourceLoader::createShaderProgram(":/shaders/quad.vert", ":/shaders/particles_update.frag");
     m_particleDrawProgram = ResourceLoader::createShaderProgram(":/shaders/particles_draw.vert", ":/shaders/particles_draw.frag");
 
-    initializeRoom(); // Sets up the walls, floor, and ceiling
-    initializeTerrain(); // set up terrain
+    //initializeRoom(); // Sets up the walls, floor, and ceiling
+    //initializeTerrain(); // set up terrain
     initializeParticles(); // sets up particles
 
 }
@@ -237,71 +237,71 @@ void GLWidget::paintGL() {
     // Switch to your own machine's absolute file path
     initializeTexture("/Users/annazhao/Anna/brown/graphics/cabin-fever/wood.jpg", false);
 
-    m_backWall->draw();
-    m_leftWall->draw();
-    m_rightWall->draw();
-    m_ceiling->draw();
-    m_floor->draw();
+//    m_backWall->draw();
+//    m_leftWall->draw();
+//    m_rightWall->draw();
+//    m_ceiling->draw();
+//    m_floor->draw();
 
-    m_windowSidePanels->draw();
-    m_windowUpperPanel->draw();
-    m_windowLowerPanel->draw();
+//    m_windowSidePanels->draw();
+//    m_windowUpperPanel->draw();
+//    m_windowLowerPanel->draw();
 
-    model = glm::translate(glm::vec3(-4.f, 2.f, -15.f));
-    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    glUniform4f(glGetUniformLocation(m_phongProgram, "color"),
-                0.2f,
-                0.90f,
-                0.98f,
-                1.f);
-    m_sphere->draw();
+//    model = glm::translate(glm::vec3(-4.f, 2.f, -15.f));
+//    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+//    glUniform4f(glGetUniformLocation(m_phongProgram, "color"),
+//                0.2f,
+//                0.90f,
+//                0.98f,
+//                1.f);
+//    m_sphere->draw();
 
-    model = glm::translate(glm::vec3(4.f, 2.f, -15.f));
-    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    m_sphere->draw();
+//    model = glm::translate(glm::vec3(4.f, 2.f, -15.f));
+//    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+//    m_sphere->draw();
 
-    model = glm::translate(glm::vec3(4.f, -2.f, -15.f));
-    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    m_sphere->draw();
+//    model = glm::translate(glm::vec3(4.f, -2.f, -15.f));
+//    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+//    m_sphere->draw();
 
-    model = glm::translate(glm::vec3(-4.f, -2.f, -15.f));
-    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    m_sphere->draw();
+//    model = glm::translate(glm::vec3(-4.f, -2.f, -15.f));
+//    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+//    m_sphere->draw();
 
-    glUseProgram(m_textureProgram);
+//    glUseProgram(m_textureProgram);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//    glEnable(GL_BLEND);
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glBindTexture(GL_TEXTURE_2D, m_texture);
+//    glBindTexture(GL_TEXTURE_2D, m_texture);
 
-    initializeTexture("/Users/annazhao/Anna/brown/graphics/cabin-fever/pane.png", true);
+//    initializeTexture("/Users/annazhao/Anna/brown/graphics/cabin-fever/pane.png", true);
 
-    model = glm::translate(glm::vec3(0.f, 0.f, -0.05f));
-    glUniformMatrix4fv(glGetUniformLocation(m_textureProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    glUniformMatrix4fv(glGetUniformLocation(m_textureProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
-    glUniformMatrix4fv(glGetUniformLocation(m_textureProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
+//    model = glm::translate(glm::vec3(0.f, 0.f, -0.05f));
+//    glUniformMatrix4fv(glGetUniformLocation(m_textureProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+//    glUniformMatrix4fv(glGetUniformLocation(m_textureProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
+//    glUniformMatrix4fv(glGetUniformLocation(m_textureProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
 
-    m_windowPane->draw();
+//    m_windowPane->draw();
 
-    glUseProgram(m_phongProgram);
+//    glUseProgram(m_phongProgram);
 
-    glBindTexture(GL_TEXTURE_2D, m_texture);
+//    glBindTexture(GL_TEXTURE_2D, m_texture);
 
-    initializeTexture("/Users/annazhao/Anna/brown/graphics/cabin-fever/windowframe.png", true);
+//    initializeTexture("/Users/annazhao/Anna/brown/graphics/cabin-fever/windowframe.png", true);
 
-    model = glm::translate(glm::vec3(0.f, 0.f, 0.f));
-    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+//    model = glm::translate(glm::vec3(0.f, 0.f, 0.f));
+//    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
-    glUniform4f(glGetUniformLocation(m_phongProgram, "color"),
-                0.08f,
-                0.05f,
-                0.05f,
-                1.f);
+//    glUniform4f(glGetUniformLocation(m_phongProgram, "color"),
+//                0.08f,
+//                0.05f,
+//                0.05f,
+//                1.f);
 
-    m_windowFrame->draw();
+//    m_windowFrame->draw();
 
-    glDisable(GL_BLEND);
+//    glDisable(GL_BLEND);
 
     drawParticles();
     update();
@@ -326,13 +326,13 @@ void GLWidget::drawParticles() {
     glUniform1i(glGetUniformLocation(m_particleUpdateProgram, "numParticles"), m_numParticles);
     glUniform1i(glGetUniformLocation(m_particleUpdateProgram, "prevPos"), 0);
     glUniform1i(glGetUniformLocation(m_particleUpdateProgram, "prevVel"), 1);
+    glUniform1f(glGetUniformLocation(m_particleUpdateProgram, "gravity"), settings.snowRate);
 
     m_quad->draw();
 
     // TODO [Task 17] Draw the particles from nextFBO
     nextFBO->unbind();
-    glClear(GL_COLOR_BUFFER_BIT);
-    glClear(GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(m_particleDrawProgram);
     setParticleViewport();
     glActiveTexture(GL_TEXTURE0);

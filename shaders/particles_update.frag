@@ -4,6 +4,7 @@ uniform float firstPass;
 uniform sampler2D prevPos;
 uniform sampler2D prevVel;
 uniform int numParticles;
+uniform float gravity;
 
 // output from quad.vert
 in vec2 uv;
@@ -42,12 +43,13 @@ vec2 calculateInitialVelocity(int index) {
 }
 
 vec4 initPosition(int index) {
-    const vec3 spawn = vec3(0, 0, 0);
+    float x = hash(index) * 2 - 1;
+    vec3 spawn = vec3(x, 1, 0);
     return vec4(spawn, calculateLifetime(index));
 }
 
 vec4 initVelocity(int index) {
-    return vec4(calculateInitialVelocity(index).x, 0, 0, 0);
+    return vec4(0, -gravity, 0, 0);
 }
 
 vec4 updatePosition(int index) {
@@ -62,19 +64,22 @@ vec4 updatePosition(int index) {
 }
 
 vec4 updateVelocity(int index) {
-    const float G = -0.1;
+    float G = -0.1;
     // TODO [Task 16]
     // - sample prevVel at uv
     // - only force is gravity in y direction.  Add G * dt.
     // - w component is age, so add dt
     vec4 pVel = texture(prevVel, uv);
-    return vec4(pVel.x, pVel.y + G * dt, pVel.z, pVel.w + dt) ;
+    return vec4(pVel.x, pVel.y + G * dt, pVel.z, pVel.w + (dt * (gravity/2))) ;
 }
 
 void main() {
     int index = int(uv.x * numParticles);
     if (firstPass > 0.5) {
         pos = initPosition(index);
+        float rand = hash(index * 2349.2693) * 10;
+        pos.y = pos.y * rand + 0.7;
+        pos.w = pos.w * rand + 8;
         vel = initVelocity(index);
     } else {
         pos = updatePosition(index);
