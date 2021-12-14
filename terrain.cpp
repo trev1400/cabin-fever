@@ -14,9 +14,9 @@ Terrain::Terrain() : m_numRows(100), m_numCols(m_numRows), m_isFilledIn(true)
  * Returns a pseudo-random value between -1.0 and 1.0 for the given row and
  * column.
  */
-float Terrain::randValue(int row, int col)
+float Terrain::randValue(int row, int col, float a)
 {
-    return -1.0 + 2.0 * glm::fract(sin(row * 127.1f + col * 311.7f) * 43758.5453123f);
+    return -a + 2.0 * a * glm::fract(sin(row * 127.1f + col * 311.7f) * 43758.5453123f);
 }
 
 
@@ -30,7 +30,7 @@ glm::vec3 Terrain::getPosition(int row, int col)
     glm::vec3 position;
     // in front of room: z(-9 to -30), x(-9 to 9)
     position.x = 60.f * row/m_numRows - 30; // centers around origin
-    position.y = -6.01 + settings.snowLevel;
+    position.y = -3.01;
     position.z = 60.f * col/m_numCols - 30;
 
     if (position.x <= m_roomXRadius && position.x >= -m_roomXRadius) {
@@ -40,29 +40,58 @@ glm::vec3 Terrain::getPosition(int row, int col)
     }
 
     // 3 (jagged) to 15 (flat), default = 5
-    int scale = 18 - settings.windiness;
+//    int scale = 18 - settings.windiness;
+//    float amp = 1;
+//    float freq = 1;
 
-    for (int i = 0; i < 3; i++) {
-        float new_row = glm::floor((float)row/scale);
-        float new_col = glm::floor((float)col/scale);
+//    for (int i = 0; i < 4; i++) {
+//        float new_row = glm::floor((float)row/scale);
+//        float new_col = glm::floor((float)col/scale);
 
-        float row_frac = glm::fract((float)row/scale);
-        float col_frac = glm::fract((float)col/scale);
+//        float row_frac = glm::fract((float)row/scale);
+//        float col_frac = glm::fract((float)col/scale);
 
-        // height vals
-        float A = randValue(new_row, new_col); // curr square
-        float B = randValue(new_row, new_col+1); // one to the right
-        float C = randValue(new_row+1, new_col); // bottom
-        float D = randValue(new_row+1, new_col+1); // bottom right
+//        // height vals
+//        float A = randValue(new_row, new_col, amp); // curr square
+//        float B = randValue(new_row, new_col+1, amp); // one to the right
+//        float C = randValue(new_row+1, new_col, amp); // bottom
+//        float D = randValue(new_row+1, new_col+1, amp); // bottom right
 
-        float bicubic_col = 3.0*pow(col_frac,2) - 2.0*pow(col_frac,3);
-        float bicubic_row = 3.0*pow(row_frac,2) - 2.0*pow(row_frac,3);
+//        float bicubic_col = 3.0*pow(col_frac,2) - 2.0*pow(col_frac,3);
+//        float bicubic_row = 3.0*pow(row_frac,2) - 2.0*pow(row_frac,3);
 
-        float height = (glm::mix(glm::mix(A, B, bicubic_col), glm::mix(C, D, bicubic_col), bicubic_row)) / pow(2, i);
-        position.y += height;
+//        float height = (glm::mix(glm::mix(A, B, bicubic_col), glm::mix(C, D, bicubic_col), bicubic_row)) / pow(2, i);
+//        position.y += height;
 
-        scale = scale * 2;
-    }
+//        scale = scale * 2;
+//    }
+     float noiseSum = 0;
+     float a = 1 + settings.snowLevel;
+     float f = 1 + settings.windiness;
+
+     for (int i = 0; i < 3; i++) {
+         int newRow = glm::floor(row / (20.0f / f));
+         int newCol = glm::floor(col / (20.0f / f));
+
+         float heightA = randValue(newRow, newCol, a);
+         float heightB = randValue(newRow, newCol+1, a);
+         float heightC = randValue(newRow+1, newCol, a);
+         float heightD = randValue(newRow+1, newCol+1, a);
+
+         float x = glm::fract(row / (20.0f / f));
+         float z = glm::fract(col / (20.0f / f));
+
+         float ab = glm::mix(heightA, heightB, z * z * (3 - 2 * z));
+         float cd = glm::mix(heightC, heightD, z * z * (3 - 2 * z));
+         float abcd = glm::mix(ab, cd, x * x * (3 - 2 * x));
+
+         position.y += abcd;
+
+         a *= 0.5;
+         f *= 2;
+     }
+
+//     position.y = noiseSum;
 
     return position;
 }

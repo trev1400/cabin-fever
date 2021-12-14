@@ -19,7 +19,7 @@ public:
     void settingsChanged();
 
 private:
-    float randValue(int row, int col);
+    float randValue(int row, int col, float a);
     glm::vec3 getPosition(int row, int col);
     glm::vec3 getNormal(int row, int col);
     const float m_numRows, m_numCols;
