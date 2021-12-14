@@ -23,6 +23,7 @@ class GLWidget : public QGLWidget {
 public:
     GLWidget(QGLFormat format, QWidget *parent = 0);
     ~GLWidget();
+    void settingsChanged();
     void snowballPressed();
 
 protected:
@@ -39,10 +40,15 @@ protected:
     void wheelEvent(QWheelEvent *e);
     void initializeRoom();
     void initializeTerrain();
+    void initializeScene();
     void initializeParticles();
     void initializeOpenGLShape(std::unique_ptr<OpenGLShape> &quad, std::vector<GLfloat> vertices, int numVertices, bool hasTexture);
     void initializeTextures();
     void loadTexture(TextureInfo texInfo);
+    void drawRoom();
+    void drawTerrain();
+    void drawScene();
+    void drawWindow();
     void drawParticles();
     void setParticleViewport();
 private:
@@ -57,7 +63,7 @@ private:
     GLuint m_particleUpdateProgram;
     GLuint m_particleDrawProgram;
 
-    std::unique_ptr<OpenGLShape> m_sphere;
+    std::unique_ptr<OpenGLShape> m_moon;
     std::unique_ptr<OpenGLShape> m_snowball;
     std::unique_ptr<OpenGLShape> m_leftWall;
     std::unique_ptr<OpenGLShape> m_rightWall;
@@ -75,13 +81,14 @@ private:
     std::unique_ptr<OpenGLShape> m_leftPainting;
     std::unique_ptr<OpenGLShape> m_backLeftPainting;
     std::unique_ptr<OpenGLShape> m_backRightPainting;
+    std::unique_ptr<OpenGLShape> m_door;
 
     glm::vec3 m_snowballPos;
     glm::vec3 m_snowballVelocity;
     bool m_snowballPressed;
 
     // Update this array whenever a new texture is added
-    GLuint m_textures[9];
+    GLuint m_textures[10];
 
     Terrain m_terrain;
 
@@ -95,7 +102,7 @@ private:
     int m_numParticles;
 
     void rebuildMatrices();
-    glm::mat4 m_view, m_projection;
+    glm::mat4 m_model, m_view, m_projection;
 
     /** For mouse interaction. */
     float m_angleX, m_angleY, m_zoom;

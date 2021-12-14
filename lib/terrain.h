@@ -14,9 +14,9 @@ public:
 
     std::vector<glm::vec3> init();
     void draw();
-
     std::unique_ptr<OpenGLShape> openGLShape;
     bool isFilledIn();
+    void settingsChanged();
 
 private:
     float randValue(int row, int col);

@@ -1,5 +1,5 @@
 #include "lib/terrain.h"
-
+#include "Settings.h"
 #include <math.h>
 #include <iostream>
 #include <glm.h>
@@ -30,16 +30,17 @@ glm::vec3 Terrain::getPosition(int row, int col)
     glm::vec3 position;
     // in front of room: z(-9 to -30), x(-9 to 9)
     position.x = 60.f * row/m_numRows - 30; // centers around origin
-    position.y = -3.01;
+    position.y = -6.01 + settings.snowLevel;
     position.z = 60.f * col/m_numCols - 30;
 
     if (position.x <= m_roomXRadius && position.x >= -m_roomXRadius) {
         if (position.z <= m_roomZRadius && position.z >= -m_roomZRadius) {
-            return position; // dont render terrain if is in room dimensions
+            return glm::vec3({position.x, -3.01, position.z}); // dont render terrain if is in room dimensions
         }
     }
 
-    int scale = 3;
+    // 3 (jagged) to 15 (flat), default = 5
+    int scale = 18 - settings.windiness;
 
     for (int i = 0; i < 3; i++) {
         float new_row = glm::floor((float)row/scale);
@@ -141,4 +142,10 @@ std::vector<glm::vec3> Terrain::init() {
 void Terrain::draw()
 {
     openGLShape->draw();
+}
+
+void Terrain::settingsChanged() {
+    std::cout << "terrain: settings changed" << std::endl;
+    std::cout << "TERRAIN: windiness: " << settings.windiness << std::endl;
+    this->init();
 }
