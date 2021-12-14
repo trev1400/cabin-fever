@@ -28,16 +28,16 @@ glm::vec3 Terrain::getPosition(int row, int col)
 {
 
     glm::vec3 position;
-    position.x = 60 * row/m_numRows - 30; // centers around origin
-    position.y = 0;
-    position.z = 60 * col/m_numCols - 30;
+    // in front of room: z(-9 to -30), x(-9 to 9)
+    position.x = 60.f * row/m_numRows - 30; // centers around origin
+    position.y = -3.01;
+    position.z = 60.f * col/m_numCols - 30;
 
     if (position.x <= m_roomXRadius && position.x >= -m_roomXRadius) {
-        if (position.z <= m_roomYRadius && position.z >= m_roomYRadius) {
+        if (position.z <= m_roomZRadius && position.z >= -m_roomZRadius) {
             return position; // dont render terrain if is in room dimensions
         }
     }
-//    std::cout << "pos (x,z):  (" << position.x << ", " << position.z << ")" << std::endl;
 
     int scale = 5;
 
@@ -76,11 +76,10 @@ glm::vec3 Terrain::getNormal(int row, int col)
     glm::vec3 coords = getPosition(row, col);
 
     if (coords.x <= m_roomXRadius && coords.x >= -m_roomXRadius) {
-        if (coords.z <= m_roomYRadius && coords.z >= m_roomYRadius) {
+        if (coords.z <= m_roomZRadius && coords.z >= -m_roomZRadius) {
             return glm::vec3({0.f, 1.f, 0.f}); // dont render terrain if is in room dimensions
         }
     }
-//    std::cout << "pos (x,z):  (" << coords.x << ", " << coords.z << ")" << std::endl;
 
     glm::vec3 neighbours[8];
     neighbours[0] = getPosition(row, col+1) - coords;

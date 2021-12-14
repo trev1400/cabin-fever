@@ -1,7 +1,11 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
+<<<<<<< HEAD
+** Created by: Qt User Interface Compiler version 5.15.2
+=======
 ** Created by: Qt User Interface Compiler version 5.14.2
+>>>>>>> ca9d388d3169d049a52e0597931f2f801d3b4569
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -41,7 +45,7 @@ public:
     QLabel *snowRateLabel;
     QLineEdit *snowRateTextbox;
     QSlider *snowRateSlider;
-    QPushButton *pushButton;
+    QPushButton *snowballButton;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -130,15 +134,16 @@ public:
 
         gridLayout_7->addWidget(snowRateSlider, 0, 1, 1, 1);
 
-        pushButton = new QPushButton(dockWidgetContents);
-        pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        pushButton->setGeometry(QRect(60, 90, 141, 32));
+        snowballButton = new QPushButton(dockWidgetContents);
+        snowballButton->setObjectName(QString::fromUtf8("snowballButton"));
+        snowballButton->setGeometry(QRect(60, 90, 141, 32));
         dockWidget->setWidget(dockWidgetContents);
         MainWindow->addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
 
         retranslateUi(MainWindow);
 
         QMetaObject::connectSlotsByName(MainWindow);
+        QObject::connect(snowballButton, SIGNAL(clicked()), MainWindow, SLOT(throwSnowball()));
     } // setupUi
 
     void retranslateUi(QMainWindow *MainWindow)
@@ -148,7 +153,7 @@ public:
         snowSizeTextbox->setText(QString());
         snowRateLabel->setText(QCoreApplication::translate("MainWindow", "Snow Rate", nullptr));
         snowRateTextbox->setText(QString());
-        pushButton->setText(QCoreApplication::translate("MainWindow", "Throw Snowball", nullptr));
+        snowballButton->setText(QCoreApplication::translate("MainWindow", "Throw Snowball", nullptr));
     } // retranslateUi
 
 };
