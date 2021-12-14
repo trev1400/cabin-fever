@@ -81,7 +81,7 @@ void GLWidget::initializeGL() {
     m_particleUpdateProgram = ResourceLoader::createShaderProgram(":/shaders/quad.vert", ":/shaders/particles_update.frag");
     m_particleDrawProgram = ResourceLoader::createShaderProgram(":/shaders/particles_draw.vert", ":/shaders/particles_draw.frag");
 
-    //initializeRoom(); // Sets up the walls, floor, and ceiling
+    initializeRoom(); // Sets up the walls, floor, and ceiling
     //initializeTerrain(); // set up terrain
     initializeParticles(); // sets up particles
 
