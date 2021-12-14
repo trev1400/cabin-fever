@@ -28,8 +28,8 @@ void Settings::loadSettingsOrDefaults() {
     QSettings s("cabin-fever", "cabin-fever");
 
     // Snow
-    snowRate = s.value("snowRate", 1).toDouble();
-    snowSize = s.value("snowSize", 1).toDouble();
+    snowRate = s.value("snowRate", 0.5).toDouble();
+    snowSize = s.value("snowSize", 0.2).toDouble();
 }
 
 void Settings::saveSettings() {
