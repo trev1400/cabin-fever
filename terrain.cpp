@@ -1,5 +1,5 @@
 #include "lib/terrain.h"
-
+#include "Settings.h"
 #include <math.h>
 #include <iostream>
 #include <glm.h>
@@ -39,7 +39,7 @@ glm::vec3 Terrain::getPosition(int row, int col)
         }
     }
 
-    int scale = 3;
+    int scale = 5;
 
     for (int i = 0; i < 3; i++) {
         float new_row = glm::floor((float)row/scale);
@@ -141,4 +141,8 @@ std::vector<glm::vec3> Terrain::init() {
 void Terrain::draw()
 {
     openGLShape->draw();
+}
+
+void Terrain::settingsChanged() {
+    init();
 }

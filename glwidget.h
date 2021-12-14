@@ -23,6 +23,7 @@ class GLWidget : public QGLWidget {
 public:
     GLWidget(QGLFormat format, QWidget *parent = 0);
     ~GLWidget();
+    void settingsChanged();
 
 protected:
     void initializeGL();
@@ -38,6 +39,7 @@ protected:
     void initializeTexture(std::string texturePath, bool hasAlpha);
     void drawParticles();
     void setParticleViewport();
+
 private:  
     int m_width;
     int m_height;

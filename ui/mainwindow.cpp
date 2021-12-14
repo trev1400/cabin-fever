@@ -62,6 +62,7 @@ void MainWindow::settingsChanged() {
     std::cout << "snow size: " << settings.snowSize << std::endl;
     std::cout << "snow level: " << settings.snowLevel << std::endl;
     std::cout << "windiness: " << settings.windiness << std::endl;
+    m_glWidget->settingsChanged();
 }
 
 void MainWindow::throwSnowball() {

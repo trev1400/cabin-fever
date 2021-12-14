@@ -83,7 +83,7 @@ void GLWidget::initializeGL() {
 
     initializeRoom(); // Sets up the walls, floor, and ceiling
     initializeTerrain(); // set up terrain
-//    initializeParticles(); // sets up particles
+    initializeParticles(); // sets up particles
 
 }
 
@@ -157,7 +157,6 @@ void GLWidget::initializeRoom() // Initialize the room's walls, floor, and ceili
 }
 
 void GLWidget::initializeTerrain() {
-
     std::vector<glm::vec3> terrainVertices = m_terrain.init();
     glPolygonMode(GL_FRONT_AND_BACK, m_terrain.isFilledIn() ? GL_FILL : GL_LINE);
 
@@ -264,7 +263,7 @@ void GLWidget::paintGL() {
     glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.08f, 0.05f, 0.05f, 1.f);
     m_windowFrame->draw();
 
-//    glDisable(GL_BLEND);
+    glDisable(GL_BLEND);
 
 //    drawParticles();
     update();
@@ -352,4 +351,8 @@ void GLWidget::rebuildMatrices() {
 
     m_projection = glm::perspective(0.8f, (float)width()/height(), 0.1f, 100.f);
     update();
+}
+
+void GLWidget::settingsChanged() {
+    m_terrain.settingsChanged();
 }

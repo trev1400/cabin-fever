@@ -30,6 +30,8 @@ void Settings::loadSettingsOrDefaults() {
     // Snow
     snowRate = s.value("snowRate", 0.5).toDouble();
     snowSize = s.value("snowSize", 0.2).toDouble();
+    snowLevel = s.value("snowLevel", 0.0).toDouble();
+    snowLevel = s.value("windiness", 5.0).toDouble();
 }
 
 void Settings::saveSettings() {
@@ -38,4 +40,6 @@ void Settings::saveSettings() {
     // Snow
     s.setValue("snowRate", snowRate);
     s.setValue("snowSize", snowSize);
+    s.setValue("snowLevel", snowLevel);
+    s.setValue("windiness", windiness);
 }
