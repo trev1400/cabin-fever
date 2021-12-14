@@ -1,5 +1,6 @@
 .DS_Store
 final.pro.user
+final.app
 
 *.o
 moc_*

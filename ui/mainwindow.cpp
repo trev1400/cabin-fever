@@ -66,7 +66,7 @@ void MainWindow::settingsChanged() {
 }
 
 void MainWindow::throwSnowball() {
-    std::cout << "throw Snowball" << std::endl;
+    m_glWidget->snowballPressed();
 }
 
 void MainWindow::shovel() {
