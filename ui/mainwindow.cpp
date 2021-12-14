@@ -40,6 +40,10 @@ void MainWindow::dataBind() {
         m_ui->snowRateSlider, m_ui->snowRateTextbox, settings.snowRate, 0.f, 50.f))
     BIND(FloatBinding::bindSliderAndTextbox(
         m_ui->snowSizeSlider, m_ui->snowSizeTextbox, settings.snowSize, 0.f, 50.f))
+    BIND(FloatBinding::bindSliderAndTextbox(
+        m_ui->snowLevelSlider, m_ui->snowLevelTextbox, settings.snowLevel, 0.f, 10.f))
+    BIND(FloatBinding::bindSliderAndTextbox(
+        m_ui->windinessSlider, m_ui->windinessTextbox, settings.windiness, 0.f, 10.f))
 
 #undef BIND
 }
@@ -56,8 +60,14 @@ void MainWindow::settingsChanged() {
     std::cout << "settings changed" << std::endl;
     std::cout << "snow rate: " << settings.snowRate << std::endl;
     std::cout << "snow size: " << settings.snowSize << std::endl;
+    std::cout << "snow level: " << settings.snowLevel << std::endl;
+    std::cout << "windiness: " << settings.windiness << std::endl;
 }
 
 void MainWindow::throwSnowball() {
     std::cout << "throw Snowball" << std::endl;
+}
+
+void MainWindow::shovel() {
+    std::cout << "shovel" << std::endl;
 }

@@ -4,9 +4,11 @@
         <file>phong.vert</file>
         <file>texture.frag</file>
         <file>texture.vert</file>
-		<file>shader.frag</file>
+        <file>shader.frag</file>
         <file>shader.vert</file>
-    	<file>glass.frag</file>
+        <file>glass.frag</file>
         <file>glass.vert</file>
+        <file>terrain.frag</file>
+        <file>terrain.vert</file>
     </qresource>
 </RCC>

@@ -149,6 +149,7 @@ void GLWidget::paintGL() {
     glUniformMatrix4fv(glGetUniformLocation(m_terrainProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(glGetUniformLocation(m_terrainProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
     glUniformMatrix4fv(glGetUniformLocation(m_terrainProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
+    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.9f, 0.9f, 0.9f, 1.f);
     m_terrain.draw();
 
     glUseProgram(m_phongProgram);
@@ -160,11 +161,7 @@ void GLWidget::paintGL() {
     // Sets uniforms that are controlled by the UI.
     glUniform1f(glGetUniformLocation(m_phongProgram, "shininess"), 20.41f);
     glUniform1f(glGetUniformLocation(m_phongProgram, "lightIntensity"), 5.f);
-    glUniform4f(glGetUniformLocation(m_phongProgram, "lightColor"),
-                1.f,
-                1.f,
-                1.f,
-                1.f);
+    glUniform4f(glGetUniformLocation(m_phongProgram, "lightColor"), 1.f, 1.f, 1.f, 1.f);
     glUniform1f(glGetUniformLocation(m_phongProgram, "attQuadratic"), 0.f);
     glUniform1f(glGetUniformLocation(m_phongProgram, "attLinear"), 0.81f);
     glUniform1f(glGetUniformLocation(m_phongProgram, "attConstant"), 2.16f);
@@ -176,11 +173,7 @@ void GLWidget::paintGL() {
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
     rebuildMatrices();
 
-    glUniform4f(glGetUniformLocation(m_phongProgram, "color"),
-                0.f,
-                0.f,
-                0.f,
-                1.f);
+    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.f, 0.f, 0.f, 1.f);
 
     glBindTexture(GL_TEXTURE_2D, m_texture);
 
@@ -244,11 +237,7 @@ void GLWidget::paintGL() {
     model = glm::translate(glm::vec3(0.f, 0.f, 0.f));
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
-    glUniform4f(glGetUniformLocation(m_phongProgram, "color"),
-                0.08f,
-                0.05f,
-                0.05f,
-                1.f);
+    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.08f, 0.05f, 0.05f, 1.f);
 
     m_windowFrame->draw();
 

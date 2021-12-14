@@ -44,6 +44,8 @@ struct Settings {
     // Snow
     float snowRate;
     float snowSize;
+    float snowLevel;
+    float windiness;
 
     // Lighting
     float lightIntensity,

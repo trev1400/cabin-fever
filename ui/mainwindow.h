@@ -34,6 +34,7 @@ private:
 public slots:
     void settingsChanged();
     void throwSnowball();
+    void shovel();
 };
 
 #endif // MAINWINDOW_H
