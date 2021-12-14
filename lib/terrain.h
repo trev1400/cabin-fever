@@ -23,7 +23,8 @@ private:
     glm::vec3 getPosition(int row, int col);
     glm::vec3 getNormal(int row, int col);
     const float m_numRows, m_numCols;
-    const int m_roomXRadius = 9, m_roomYRadius = 8; // room width, length
+    const int m_roomXRadius = 9;
+    const int m_roomZRadius = 9; // room width, length
     const bool m_isFilledIn;
 };
 

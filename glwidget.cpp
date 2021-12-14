@@ -101,48 +101,28 @@ void GLWidget::initializeTexture(std::string texturePath, bool hasAlpha)
 void GLWidget::initializeRoom() // Initialize the room's walls, floor, and ceiling
 {
     // Initialize the room's walls, floor, and ceiling
-    std::vector<GLfloat> backVertices = BACK_WALL_VERTEX_POSITIONS;
     m_backWall = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_backWall, BACK_WALL_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
-
-    std::vector<GLfloat> leftVertices = LEFT_WALL_VERTEX_POSITIONS;
     m_leftWall = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_leftWall, LEFT_WALL_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
-
-    std::vector<GLfloat> rightVertices = RIGHT_WALL_VERTEX_POSITIONS;
     m_rightWall = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_rightWall, RIGHT_WALL_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
-
-    std::vector<GLfloat> ceilingVertices = CEILING_VERTEX_POSITIONS;
     m_ceiling = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_ceiling, CEILING_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
-
-    std::vector<GLfloat> floorVertices = FLOOR_VERTEX_POSITIONS;
     m_floor = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_floor, FLOOR_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
-
-    std::vector<GLfloat> windowSidePanelsVertices = WINDOW_SIDE_PANELS_VERTEX_POSITIONS;
     m_windowSidePanels = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_windowSidePanels, windowSidePanelsVertices, NUM_WINDOW_SIDE_PANELS_VERTICES, true);
-
-    std::vector<GLfloat> windowUpperPanelsVertices = WINDOW_UPPER_PANEL_VERTEX_POSITIONS;
     m_windowUpperPanel = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_windowUpperPanel, windowUpperPanelsVertices, NUM_WINDOW_UPPER_PANEL_VERTICES, true);
-
-    std::vector<GLfloat> windowLowerPanelVertices = WINDOW_LOWER_PANEL_VERTEX_POSITIONS;
     m_windowLowerPanel = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_windowLowerPanel, windowLowerPanelVertices, NUM_WINDOW_LOWER_PANEL_VERTICES, true);
-
-    std::vector<GLfloat> windowFrameVertices = WINDOW_FRAME_VERTEX_POSITIONS;
     m_windowFrame = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_windowFrame, windowFrameVertices, NUM_WINDOW_FRAME_VERTICES, true);
-
-    std::vector<GLfloat> windowPaneVertices = WINDOW_FRAME_VERTEX_POSITIONS;
     m_windowPane = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_windowPane, windowPaneVertices, NUM_WINDOW_FRAME_VERTICES, true);
-
-    std::vector<GLfloat> sphereVertices = SPHERE_VERTEX_POSITIONS;
     m_sphere = std::make_unique<OpenGLShape>();
+
+    initializeOpenGLShape(m_backWall, BACK_WALL_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
+    initializeOpenGLShape(m_leftWall, LEFT_WALL_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
+    initializeOpenGLShape(m_rightWall, RIGHT_WALL_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
+    initializeOpenGLShape(m_ceiling, CEILING_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
+    initializeOpenGLShape(m_floor, FLOOR_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
+    initializeOpenGLShape(m_windowSidePanels, WINDOW_SIDE_PANELS_VERTEX_POSITIONS, NUM_WINDOW_SIDE_PANELS_VERTICES, true);
+    initializeOpenGLShape(m_windowUpperPanel, WINDOW_UPPER_PANEL_VERTEX_POSITIONS, NUM_WINDOW_UPPER_PANEL_VERTICES, true);
+    initializeOpenGLShape(m_windowLowerPanel, WINDOW_LOWER_PANEL_VERTEX_POSITIONS, NUM_WINDOW_LOWER_PANEL_VERTICES, true);
+    initializeOpenGLShape(m_windowFrame, WINDOW_FRAME_VERTEX_POSITIONS, NUM_WINDOW_FRAME_VERTICES, true);
+    initializeOpenGLShape(m_windowPane, WINDOW_FRAME_VERTEX_POSITIONS, NUM_WINDOW_FRAME_VERTICES, true);
     initializeOpenGLShape(m_sphere, SPHERE_VERTEX_POSITIONS, NUM_SPHERE_VERTICES, false);
 }
 
@@ -163,15 +143,15 @@ void GLWidget::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glm::mat4 model(1.f);
 
-    glUseProgram(m_phongProgram);
-
 //     Draw terrain.
-//    glUseProgram(m_phongProgram);
+    glUseProgram(m_terrainProgram);
 //     Set uniforms.
-//    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-//    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
-//    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
-//    m_terrain.draw();
+    glUniformMatrix4fv(glGetUniformLocation(m_terrainProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(glGetUniformLocation(m_terrainProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
+    glUniformMatrix4fv(glGetUniformLocation(m_terrainProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
+    m_terrain.draw();
+
+    glUseProgram(m_phongProgram);
 
     // Sets projection and view matrix uniforms.
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
