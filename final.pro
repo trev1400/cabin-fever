@@ -122,4 +122,8 @@ DISTFILES += \
     shaders/terrain.frag \
     shaders/terrain.vert \
     shaders/texture.frag \
-    shaders/texture.vert
+    shaders/texture.vert \
+    shaders/particles_draw.frag \
+    shaders/particles_draw.vert \
+    shaders/particles_update.frag \
+    shaders/quad.vert

@@ -8,6 +8,10 @@
         <file>shader.vert</file>
         <file>glass.frag</file>
         <file>glass.vert</file>
+        <file>particles_draw.frag</file>
+        <file>particles_draw.vert</file>
+        <file>particles_update.frag</file>
+        <file>quad.vert</file>
         <file>terrain.frag</file>
         <file>terrain.vert</file>
     </qresource>

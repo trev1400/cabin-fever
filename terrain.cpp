@@ -39,7 +39,7 @@ glm::vec3 Terrain::getPosition(int row, int col)
         }
     }
 
-    int scale = 7;
+    int scale = 3;
 
     for (int i = 0; i < 3; i++) {
         float new_row = glm::floor((float)row/scale);

@@ -37,9 +37,9 @@ void MainWindow::dataBind() {
     assert(connect(_b, SIGNAL(dataChanged()), this, SLOT(settingsChanged()))); \
 }
     BIND(FloatBinding::bindSliderAndTextbox(
-        m_ui->snowRateSlider, m_ui->snowRateTextbox, settings.snowRate, 0.f, 50.f))
+        m_ui->snowRateSlider, m_ui->snowRateTextbox, settings.snowRate, 0.1f, 4.f))
     BIND(FloatBinding::bindSliderAndTextbox(
-        m_ui->snowSizeSlider, m_ui->snowSizeTextbox, settings.snowSize, 0.f, 50.f))
+        m_ui->snowSizeSlider, m_ui->snowSizeTextbox, settings.snowSize, 0.1f, 0.5f))
     BIND(FloatBinding::bindSliderAndTextbox(
         m_ui->snowLevelSlider, m_ui->snowLevelTextbox, settings.snowLevel, 0.f, 10.f))
     BIND(FloatBinding::bindSliderAndTextbox(
