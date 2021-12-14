@@ -25,6 +25,11 @@ public:
     ~GLWidget();
 
 protected:
+    struct TextureInfo {
+        std::string name;
+        bool hasAlpha;
+    };
+
     void initializeGL();
     void paintGL();
     void resizeGL(int w, int h);
@@ -35,10 +40,11 @@ protected:
     void initializeTerrain();
     void initializeParticles();
     void initializeOpenGLShape(std::unique_ptr<OpenGLShape> &quad, std::vector<GLfloat> vertices, int numVertices, bool hasTexture);
-    void initializeTexture(std::string texturePath, bool hasAlpha);
+    void initializeTextures();
+    void loadTexture(TextureInfo texInfo);
     void drawParticles();
     void setParticleViewport();
-private:  
+private:
     int m_width;
     int m_height;
 
@@ -61,8 +67,15 @@ private:
     std::unique_ptr<OpenGLShape> m_windowUpperPanel;
     std::unique_ptr<OpenGLShape> m_windowFrame;
     std::unique_ptr<OpenGLShape> m_windowPane;
+    std::unique_ptr<OpenGLShape> m_frontLeftPainting;
+    std::unique_ptr<OpenGLShape> m_frontRightPainting;
+    std::unique_ptr<OpenGLShape> m_rightPainting;
+    std::unique_ptr<OpenGLShape> m_leftPainting;
+    std::unique_ptr<OpenGLShape> m_backLeftPainting;
+    std::unique_ptr<OpenGLShape> m_backRightPainting;
 
-    unsigned int m_texture;
+    // Update this array whenever a new texture is added
+    GLuint m_textures[9];
 
     Terrain m_terrain;
 

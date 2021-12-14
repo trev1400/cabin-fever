@@ -1,34 +1,35 @@
 #ifndef ROOM_H
 #define ROOM_H
 
-#define NUM_QUAD_VERTICES 14
+#define NUM_ONE_SIDED_QUAD_VERTICES 6
+#define NUM_TWO_SIDED_QUAD_VERTICES 12
 
 #define FRONT_WALL_VERTEX_POSITIONS {\
     /* FRONT INSIDE */     \
-    8.f, 3.f, -20.f, \
+    8.f, 3.f, -9.f, \
     4.f, 4.f, \
-    -8.f, 3.f, -20.f, \
+    -8.f, 3.f, -9.f, \
     0.f, 4.f, \
-    -8.f, -3.f, -20.f, \
+    -8.f, -3.f, -9.f, \
     0.f, 0.f, \
-    8.f, 3.f, -20.f, \
+    8.f, 3.f, -9.f, \
     4.f, 4.f, \
-    -8.f, -3.f, -20.f, \
+    -8.f, -3.f, -9.f, \
     0.f, 0.f, \
-    8.f, -3.f, -20.f, \
+    8.f, -3.f, -9.f, \
     4.f, 0.f, \
     /* FRONT OUTSIDE */     \
-    8.f, 3.f, -20.f, \
+    8.f, 3.f, -9.f, \
     4.f, 4.f, \
-    -8.f, -3.f, -20.f, \
+    -8.f, -3.f, -9.f, \
     0.f, 0.f, \
-    -8.f, 3.f, -20.f, \
+    -8.f, 3.f, -9.f, \
     0.f, 4.f, \
-    8.f, 3.f, -20.f, \
+    8.f, 3.f, -9.f, \
     4.f, 4.f, \
-    8.f, -3.f, -20.f, \
+    8.f, -3.f, -9.f, \
     4.f, 0.f, \
-    -8.f, -3.f, -20.f, \
+    -8.f, -3.f, -9.f, \
     0.f, 0.f, \
 }
 

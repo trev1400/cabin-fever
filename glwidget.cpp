@@ -3,6 +3,7 @@
 #include "lib/sphere.h"
 #include "lib/room.h"
 #include "lib/window.h"
+#include "lib/paintings.h"
 #include "lib/resourceloader.h"
 #include "lib/errorchecker.h"
 #include "Settings.h"
@@ -37,6 +38,12 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
       m_windowLowerPanel(nullptr),
       m_windowUpperPanel(nullptr),
       m_windowFrame(nullptr),
+      m_frontLeftPainting(nullptr),
+      m_frontRightPainting(nullptr),
+      m_rightPainting(nullptr),
+      m_leftPainting(nullptr),
+      m_backLeftPainting(nullptr),
+      m_backRightPainting(nullptr),
       m_quad(nullptr),
       m_particlesFBO1(nullptr),
       m_particlesFBO2(nullptr),
@@ -51,6 +58,53 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
 GLWidget::~GLWidget()
 {
     glDeleteVertexArrays(1, &m_particlesVAO);
+}
+
+void GLWidget::loadTexture(TextureInfo texInfo)
+{
+    int width, height, numChannels;
+    unsigned char *data = stbi_load(texInfo.name.c_str(), &width, &height, &numChannels, 0);
+    if (data) {
+        if (texInfo.hasAlpha) {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        } else {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        }
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+    }
+
+void GLWidget::initializeTextures()
+{
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    std::vector<TextureInfo> textureInfo;
+
+    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/wood.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/pane.png", true});
+    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/windowframe.png", true});
+    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/mountain_cabin_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/alps_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/nature_mural_1.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/nature_mural_2.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/polar_bear_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/merry_xmas_painting.jpg", false});
+
+    glGenTextures(textureInfo.size(), m_textures);
+
+    for (int i = 0; i < textureInfo.size(); i++) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_textures[i]);
+        loadTexture(textureInfo[i]);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
 }
 
 void GLWidget::initializeOpenGLShape(std::unique_ptr<OpenGLShape> &shape, std::vector<GLfloat> vertices, int numVertices, bool hasTexture)
@@ -81,6 +135,8 @@ void GLWidget::initializeGL() {
     m_particleUpdateProgram = ResourceLoader::createShaderProgram(":/shaders/quad.vert", ":/shaders/particles_update.frag");
     m_particleDrawProgram = ResourceLoader::createShaderProgram(":/shaders/particles_draw.vert", ":/shaders/particles_draw.frag");
 
+    initializeTextures();
+
     initializeRoom(); // Sets up the walls, floor, and ceiling
     initializeTerrain(); // set up terrain
 //    initializeParticles(); // sets up particles
@@ -101,58 +157,46 @@ void GLWidget::initializeParticles() {
     m_particlesFBO2 = std::make_shared<FBO>(2, FBO::DEPTH_STENCIL_ATTACHMENT::NONE, m_numParticles, 1, TextureParameters::WRAP_METHOD::CLAMP_TO_EDGE, TextureParameters::FILTER_METHOD::NEAREST, GL_FLOAT);
 }
 
-void GLWidget::initializeTexture(std::string texturePath, bool hasAlpha)
-{
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDeleteTextures(1, &m_texture);
-    glGenTextures(1, &m_texture);
-    glBindTexture(GL_TEXTURE_2D, m_texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    int width, height, numChannels;
-    unsigned char *data = stbi_load(texturePath.c_str(), &width, &height, &numChannels, 0);
-    if (data) {
-        if (hasAlpha) {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        } else {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        }
-
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-}
-
-void GLWidget::initializeRoom() // Initialize the room's walls, floor, and ceiling
+void GLWidget::initializeRoom()
 {
     // Initialize the room's walls, floor, and ceiling
     m_backWall = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_backWall, BACK_WALL_VERTEX_POSITIONS, NUM_TWO_SIDED_QUAD_VERTICES, true);
     m_leftWall = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_leftWall, LEFT_WALL_VERTEX_POSITIONS, NUM_TWO_SIDED_QUAD_VERTICES, true);
     m_rightWall = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_rightWall, RIGHT_WALL_VERTEX_POSITIONS, NUM_TWO_SIDED_QUAD_VERTICES, true);
     m_ceiling = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_ceiling, CEILING_VERTEX_POSITIONS, NUM_TWO_SIDED_QUAD_VERTICES, true);
     m_floor = std::make_unique<OpenGLShape>();
-    m_windowSidePanels = std::make_unique<OpenGLShape>();
-    m_windowUpperPanel = std::make_unique<OpenGLShape>();
-    m_windowLowerPanel = std::make_unique<OpenGLShape>();
-    m_windowFrame = std::make_unique<OpenGLShape>();
-    m_windowPane = std::make_unique<OpenGLShape>();
-    m_sphere = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_floor, FLOOR_VERTEX_POSITIONS, NUM_TWO_SIDED_QUAD_VERTICES, true);
 
-    initializeOpenGLShape(m_backWall, BACK_WALL_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
-    initializeOpenGLShape(m_leftWall, LEFT_WALL_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
-    initializeOpenGLShape(m_rightWall, RIGHT_WALL_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
-    initializeOpenGLShape(m_ceiling, CEILING_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
-    initializeOpenGLShape(m_floor, FLOOR_VERTEX_POSITIONS, NUM_QUAD_VERTICES, true);
-    initializeOpenGLShape(m_windowSidePanels, WINDOW_SIDE_PANELS_VERTEX_POSITIONS, NUM_WINDOW_SIDE_PANELS_VERTICES, true);
-    initializeOpenGLShape(m_windowUpperPanel, WINDOW_UPPER_PANEL_VERTEX_POSITIONS, NUM_WINDOW_UPPER_PANEL_VERTICES, true);
-    initializeOpenGLShape(m_windowLowerPanel, WINDOW_LOWER_PANEL_VERTEX_POSITIONS, NUM_WINDOW_LOWER_PANEL_VERTICES, true);
-    initializeOpenGLShape(m_windowFrame, WINDOW_FRAME_VERTEX_POSITIONS, NUM_WINDOW_FRAME_VERTICES, true);
-    initializeOpenGLShape(m_windowPane, WINDOW_FRAME_VERTEX_POSITIONS, NUM_WINDOW_FRAME_VERTICES, true);
+    m_windowSidePanels = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_floor, WINDOW_SIDE_PANELS_VERTEX_POSITIONS, NUM_WINDOW_SIDE_PANELS_VERTICES, true);
+    m_windowUpperPanel = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_windowUpperPanel, WINDOW_UPPER_PANEL_VERTEX_POSITIONS, NUM_TWO_SIDED_QUAD_VERTICES, true);
+    m_windowLowerPanel = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_windowLowerPanel, WINDOW_LOWER_PANEL_VERTEX_POSITIONS, NUM_TWO_SIDED_QUAD_VERTICES, true);
+    m_windowFrame = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_windowFrame, WINDOW_FRAME_VERTEX_POSITIONS, NUM_TWO_SIDED_QUAD_VERTICES, true);
+    m_windowPane = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_windowPane, WINDOW_FRAME_VERTEX_POSITIONS, NUM_TWO_SIDED_QUAD_VERTICES, true);
+
+    m_frontLeftPainting = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_frontLeftPainting, FRONT_LEFT_PAINTING_VERTEX_POSITIONS, NUM_ONE_SIDED_QUAD_VERTICES, true);
+    m_frontRightPainting = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_frontRightPainting, FRONT_RIGHT_PAINTING_VERTEX_POSITIONS, NUM_ONE_SIDED_QUAD_VERTICES, true);
+    m_rightPainting = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_rightPainting, RIGHT_PAINTING_VERTEX_POSITIONS, NUM_ONE_SIDED_QUAD_VERTICES, true);
+    m_leftPainting = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_leftPainting, LEFT_PAINTING_VERTEX_POSITIONS, NUM_ONE_SIDED_QUAD_VERTICES, true);
+    m_backLeftPainting = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_backLeftPainting, BACK_LEFT_PAINTING_VERTEX_POSITIONS, NUM_ONE_SIDED_QUAD_VERTICES, true);
+    m_backRightPainting = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_backRightPainting, BACK_RIGHT_PAINTING_VERTEX_POSITIONS, NUM_ONE_SIDED_QUAD_VERTICES, true);
+
+    m_sphere = std::make_unique<OpenGLShape>();
     initializeOpenGLShape(m_sphere, SPHERE_VERTEX_POSITIONS, NUM_SPHERE_VERTICES, false);
 }
 
@@ -205,10 +249,8 @@ void GLWidget::paintGL() {
 
     glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.f, 0.f, 0.f, 1.f);
 
-    glBindTexture(GL_TEXTURE_2D, m_texture);
-
-    // Switch to your own machine's absolute file path
-    initializeTexture("/Users/renajiang/Desktop/course/cs123/cabin-fever/wood.jpg", false);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_textures[0]);
 
     m_backWall->draw();
     m_leftWall->draw();
@@ -220,21 +262,9 @@ void GLWidget::paintGL() {
     m_windowUpperPanel->draw();
     m_windowLowerPanel->draw();
 
-    model = glm::translate(glm::vec3(-4.f, 2.f, -15.f));
+    model = glm::translate(glm::vec3(8.f, 4.f, -25.f));
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.2f, 0.90f, 0.98f, 1.f);
-    m_sphere->draw();
-
-    model = glm::translate(glm::vec3(4.f, 2.f, -15.f));
-    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    m_sphere->draw();
-
-    model = glm::translate(glm::vec3(4.f, -2.f, -15.f));
-    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    m_sphere->draw();
-
-    model = glm::translate(glm::vec3(-4.f, -2.f, -15.f));
-    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.89f, 0.91f, 1.f, 1.f);
     m_sphere->draw();
 
     glUseProgram(m_textureProgram);
@@ -242,9 +272,8 @@ void GLWidget::paintGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glBindTexture(GL_TEXTURE_2D, m_texture);
-
-    initializeTexture("/Users/renajiang/Desktop/course/cs123/cabin-fever/pane.png", true);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_textures[1]);
 
     model = glm::translate(glm::vec3(0.f, 0.f, -0.05f));
     glUniformMatrix4fv(glGetUniformLocation(m_textureProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
@@ -255,19 +284,48 @@ void GLWidget::paintGL() {
 
     glUseProgram(m_phongProgram);
 
-    glBindTexture(GL_TEXTURE_2D, m_texture);
-
-    initializeTexture("/Users/renajiang/Desktop/course/cs123/cabin-fever/windowframe.png", true);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_textures[2]);
 
     model = glm::translate(glm::vec3(0.f, 0.f, 0.f));
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
     glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.08f, 0.05f, 0.05f, 1.f);
     m_windowFrame->draw();
 
-//    glDisable(GL_BLEND);
+    glDisable(GL_BLEND);
 
 //    drawParticles();
-    update();
+//    update();
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_textures[3]);
+
+    m_frontLeftPainting->draw();
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_textures[4]);
+
+    m_frontRightPainting->draw();
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_textures[5]);
+
+    m_rightPainting->draw();
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_textures[6]);
+
+    m_leftPainting->draw();
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_textures[7]);
+
+    m_backLeftPainting->draw();
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_textures[8]);
+
+    m_backRightPainting->draw();
 
     glUseProgram(0);
 }

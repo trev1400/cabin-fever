@@ -47,6 +47,7 @@ SOURCES += ui/mainwindow.cpp \
 
 
 HEADERS += ui_mainwindow.h \
+    lib/paintings.h \
     lib/window.h \
     stb_image.h \
     lib/rect.h \
