@@ -29,6 +29,7 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
       m_particleUpdateProgram(0),
       m_particleDrawProgram(0),
       m_sphere(nullptr),
+      m_snowball(nullptr),
       m_leftWall(nullptr),
       m_rightWall(nullptr),
       m_backWall(nullptr),
@@ -44,6 +45,9 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
       m_leftPainting(nullptr),
       m_backLeftPainting(nullptr),
       m_backRightPainting(nullptr),
+      m_snowballPos(glm::vec3(20.f, 3.5f, -25.f)),
+      m_snowballVelocity(glm::vec3(-.9f, -.03f, .2f)),
+      m_snowballPressed(false),
       m_quad(nullptr),
       m_particlesFBO1(nullptr),
       m_particlesFBO2(nullptr),
@@ -86,15 +90,15 @@ void GLWidget::initializeTextures()
 
     std::vector<TextureInfo> textureInfo;
 
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/wood.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/pane.png", true});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/windowframe.png", true});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/mountain_cabin_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/alps_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/nature_mural_1.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/nature_mural_2.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/polar_bear_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/merry_xmas_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/Anna/brown/graphics/cabin-fever/wood.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/Anna/brown/graphics/cabin-fever/pane.png", true});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/Anna/brown/graphics/cabin-fever/windowframe.png", true});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/Anna/brown/graphics/cabin-fever/mountain_cabin_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/Anna/brown/graphics/cabin-fever/alps_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/Anna/brown/graphics/cabin-fever/nature_mural_1.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/Anna/brown/graphics/cabin-fever/nature_mural_2.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/Anna/brown/graphics/cabin-fever/polar_bear_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/Anna/brown/graphics/cabin-fever/merry_xmas_painting.jpg", false});
 
     glGenTextures(textureInfo.size(), m_textures);
 
@@ -198,6 +202,8 @@ void GLWidget::initializeRoom()
 
     m_sphere = std::make_unique<OpenGLShape>();
     initializeOpenGLShape(m_sphere, SPHERE_VERTEX_POSITIONS, NUM_SPHERE_VERTICES, false);
+    m_snowball = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_snowball, SPHERE_VERTEX_POSITIONS, NUM_SPHERE_VERTICES, false);
 }
 
 void GLWidget::initializeTerrain() {
@@ -267,6 +273,16 @@ void GLWidget::paintGL() {
     glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.89f, 0.91f, 1.f, 1.f);
     m_sphere->draw();
 
+    if (m_snowballPressed && m_snowballPos.z < -19) {
+        m_snowballPos += m_snowballVelocity;
+    } else {
+        m_snowballPressed = false;
+    }
+    model = glm::scale(glm::vec3(0.5)) * glm::translate(m_snowballPos);
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.1f, 0.1f, 1.f, 1.f);
+    m_snowball->draw();
+
     glUseProgram(m_textureProgram);
 
     glEnable(GL_BLEND);
@@ -293,9 +309,6 @@ void GLWidget::paintGL() {
     m_windowFrame->draw();
 
     glDisable(GL_BLEND);
-
-//    drawParticles();
-//    update();
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_textures[3]);
@@ -326,6 +339,9 @@ void GLWidget::paintGL() {
     glBindTexture(GL_TEXTURE_2D, m_textures[8]);
 
     m_backRightPainting->draw();
+
+    //    drawParticles();
+    //    update();
 
     glUseProgram(0);
 }
@@ -410,4 +426,9 @@ void GLWidget::rebuildMatrices() {
 
     m_projection = glm::perspective(0.8f, (float)width()/height(), 0.1f, 100.f);
     update();
+}
+
+void GLWidget::snowballPressed() {
+    m_snowballPos = glm::vec3(20.f, 3.5f, -25.f);
+    m_snowballPressed = true;
 }

@@ -23,6 +23,7 @@ class GLWidget : public QGLWidget {
 public:
     GLWidget(QGLFormat format, QWidget *parent = 0);
     ~GLWidget();
+    void snowballPressed();
 
 protected:
     struct TextureInfo {
@@ -57,6 +58,7 @@ private:
     GLuint m_particleDrawProgram;
 
     std::unique_ptr<OpenGLShape> m_sphere;
+    std::unique_ptr<OpenGLShape> m_snowball;
     std::unique_ptr<OpenGLShape> m_leftWall;
     std::unique_ptr<OpenGLShape> m_rightWall;
     std::unique_ptr<OpenGLShape> m_backWall;
@@ -73,6 +75,10 @@ private:
     std::unique_ptr<OpenGLShape> m_leftPainting;
     std::unique_ptr<OpenGLShape> m_backLeftPainting;
     std::unique_ptr<OpenGLShape> m_backRightPainting;
+
+    glm::vec3 m_snowballPos;
+    glm::vec3 m_snowballVelocity;
+    bool m_snowballPressed;
 
     // Update this array whenever a new texture is added
     GLuint m_textures[9];
