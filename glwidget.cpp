@@ -55,7 +55,7 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
       m_firstPass(true),
       m_evenPass(true),
       m_numParticles(200),
-      m_model(glm::mat4(0.f)),
+      m_model(glm::mat4(1.f)),
       m_angleX(0.f),
       m_angleY(0.f),
       m_zoom(0.1f)
@@ -92,16 +92,16 @@ void GLWidget::initializeTextures()
 
     std::vector<TextureInfo> textureInfo;
 
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/wood.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/pane.png", true});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/windowframe.png", true});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/mountain_cabin_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/alps_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/nature_mural_1.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/nature_mural_2.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/polar_bear_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/merry_xmas_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/trevoring/Desktop/cs1230/test/cabin-fever/door.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/wood.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/pane.png", true});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/windowframe.png", true});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/mountain_cabin_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/alps_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/nature_mural_1.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/nature_mural_2.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/polar_bear_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/merry_xmas_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/door.jpg", false});
 
     glGenTextures(textureInfo.size(), m_textures);
 
@@ -235,7 +235,6 @@ void GLWidget::initializeTerrain() {
 void GLWidget::paintGL() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glm::mat4 model(1.f);
 
     // Draws the terrain
     drawTerrain();
@@ -451,7 +450,10 @@ void GLWidget::rebuildMatrices() {
 
 
 void GLWidget::settingsChanged() {
-    m_terrain.settingsChanged();
+    std::cout << "glwidget: settings changed" << std::endl;
+//    m_terrain.settingsChanged();
+    initializeTerrain();
+    drawTerrain();
 }
 
 void GLWidget::snowballPressed() {

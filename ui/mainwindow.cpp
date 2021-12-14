@@ -43,7 +43,7 @@ void MainWindow::dataBind() {
     BIND(FloatBinding::bindSliderAndTextbox(
         m_ui->snowLevelSlider, m_ui->snowLevelTextbox, settings.snowLevel, 0.f, 10.f))
     BIND(FloatBinding::bindSliderAndTextbox(
-        m_ui->windinessSlider, m_ui->windinessTextbox, settings.windiness, 0.f, 10.f))
+        m_ui->windinessSlider, m_ui->windinessTextbox, settings.windiness, 3.f, 15.f))
 
 #undef BIND
 }
