@@ -30,9 +30,10 @@ float hash(float n) { return fract(sin(n)*753.5453123); }
 // Helper functions to procedurally generate lifetimes and initial velocities
 // based on particle index
 float calculateLifetime(int index) {
-    const float MAX_LIFETIME = 15.0;
-    const float MIN_LIFETIME = 8;
-    return MIN_LIFETIME + (MAX_LIFETIME - MIN_LIFETIME) * hash(index * 2349.2693);
+//    const float MAX_LIFETIME = 15.0;
+//    const float MIN_LIFETIME = 8;
+//    return MIN_LIFETIME + (MAX_LIFETIME - MIN_LIFETIME) * hash(index * 2349.2693);
+    return 20.0;
 }
 
 vec2 calculateInitialVelocity(int index) {
@@ -53,10 +54,6 @@ vec4 initVelocity(int index) {
 }
 
 vec4 updatePosition(int index) {
-    // TODO [Task 16]
-    // - sample prevPos and prevVel at uv
-    // - xyz: pos + vel * dt
-    // - w component is lifetime, so keep it from the previous position
     vec4 pPos = texture(prevPos, uv);
     vec4 pVel = texture(prevVel, uv);
     vec4 xyz = pPos + pVel * dt;
@@ -64,13 +61,8 @@ vec4 updatePosition(int index) {
 }
 
 vec4 updateVelocity(int index) {
-    float G = -0.1;
-    // TODO [Task 16]
-    // - sample prevVel at uv
-    // - only force is gravity in y direction.  Add G * dt.
-    // - w component is age, so add dt
     vec4 pVel = texture(prevVel, uv);
-    return vec4(pVel.x, pVel.y + G * dt, pVel.z, pVel.w + (dt * (gravity/2))) ;
+    return vec4(pVel.x, -gravity, pVel.z, pVel.w + (dt * gravity * 10)) ;
 }
 
 void main() {
@@ -78,8 +70,8 @@ void main() {
     if (firstPass > 0.5) {
         pos = initPosition(index);
         float rand = hash(index * 2349.2693) * 10;
-        pos.y = pos.y * rand + 0.7;
-        pos.w = pos.w * rand + 8;
+        pos.y += rand;
+        pos.w += rand * 10;
         vel = initVelocity(index);
     } else {
         pos = updatePosition(index);

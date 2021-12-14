@@ -50,7 +50,6 @@ protected:
     void drawScene();
     void drawWindow();
     void drawParticles();
-    void setParticleViewport();
 private:
     int m_width;
     int m_height;

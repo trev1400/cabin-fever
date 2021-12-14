@@ -34,8 +34,8 @@ void main() {
 
     // Calculate diameter based on age and lifetime
     float diameter = size/10;
-    diameter *= min(min(1.0, velAge.w / (0.1 * posTime.w)),
-                    min(1.0, abs(posTime.w - velAge.w) / (0.1 * posTime.w)));
+//    diameter *= min(min(1.0, velAge.w / (0.1 * posTime.w)),
+//                    min(1.0, abs(posTime.w - velAge.w) / (0.1 * posTime.w)));
 
 
     // the offset to the points of the triangle

@@ -54,7 +54,7 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
       m_particlesFBO2(nullptr),
       m_firstPass(true),
       m_evenPass(true),
-      m_numParticles(200),
+      m_numParticles(150),
       m_model(glm::mat4(1.f)),
       m_angleX(0.f),
       m_angleY(0.f),
@@ -92,16 +92,16 @@ void GLWidget::initializeTextures()
 
     std::vector<TextureInfo> textureInfo;
 
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/wood.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/pane.png", true});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/windowframe.png", true});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/mountain_cabin_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/alps_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/nature_mural_1.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/nature_mural_2.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/polar_bear_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/merry_xmas_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/door.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/wood.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/pane.png", true});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/windowframe.png", true});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/mountain_cabin_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/alps_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/nature_mural_1.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/nature_mural_2.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/polar_bear_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/merry_xmas_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/door.jpg", false});
 
     glGenTextures(textureInfo.size(), m_textures);
 
@@ -147,7 +147,7 @@ void GLWidget::initializeGL() {
     initializeRoom(); // Sets up the cabin
     initializeTerrain(); // Sets up the terrain
     initializeScene(); // Sets up all other scene elements (moon, snowball, stars, etc.)
-//    initializeParticles(); // Sets up the particles
+    initializeParticles(); // Sets up the particles
 
 }
 
@@ -239,6 +239,10 @@ void GLWidget::paintGL() {
     // Draws the terrain
     drawTerrain();
 
+    // Draws snow
+    drawParticles();
+    glClear(GL_DEPTH_BUFFER_BIT);
+
     // Sets up phong shader program and all of its unfiroms
     glUseProgram(m_phongProgram);
 
@@ -262,8 +266,7 @@ void GLWidget::paintGL() {
     // Draws the window frame and pane
     drawWindow();
 
-    //    drawParticles();
-    //    update();
+    update();
 
     glUseProgram(0);
 }
@@ -389,9 +392,8 @@ void GLWidget::drawParticles() {
     m_quad->draw();
 
     nextFBO->unbind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(m_particleDrawProgram);
-    setParticleViewport();
+    glViewport(0, 0, m_width, m_height);
     glActiveTexture(GL_TEXTURE0);
     nextFBO->getColorAttachment(0).bind();
     glActiveTexture(GL_TEXTURE1);
@@ -413,14 +415,6 @@ void GLWidget::resizeGL(int w, int h) {
     m_width = w;
     m_height = h;
     glViewport(0, 0, w, h);
-}
-
-void GLWidget::setParticleViewport() {
-    //glViewport(0, 0, m_width, m_height);
-    int maxDim = std::max(m_width, m_height);
-    int x = (m_width - maxDim) / 2.0f;
-    int y = (m_height - maxDim) / 2.0f;
-    glViewport(x, y, maxDim, maxDim);
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event) {
@@ -453,7 +447,7 @@ void GLWidget::settingsChanged() {
     std::cout << "glwidget: settings changed" << std::endl;
 //    m_terrain.settingsChanged();
     initializeTerrain();
-    drawTerrain();
+//    drawTerrain();
 }
 
 void GLWidget::snowballPressed() {
