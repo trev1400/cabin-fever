@@ -2,6 +2,7 @@
 #define GLWIDGET_H
 
 #include <memory>
+#include <iostream>
 
 #include "GL/glew.h"
 #include <QGLWidget>
@@ -38,6 +39,7 @@ protected:
     void mousePressEvent(QMouseEvent *e);
     void mouseMoveEvent(QMouseEvent *e);
     void wheelEvent(QWheelEvent *e);
+    void initializeDefaultPhongParameters();
     void initializeRoom();
     void initializeTerrain();
     void initializeScene();
@@ -48,6 +50,7 @@ protected:
     void drawRoom();
     void drawTerrain();
     void drawScene();
+    void drawStars();
     void drawWindow();
     void drawParticles();
 private:
@@ -62,7 +65,7 @@ private:
     GLuint m_particleUpdateProgram;
     GLuint m_particleDrawProgram;
 
-    std::unique_ptr<OpenGLShape> m_moon;
+    std::unique_ptr<OpenGLShape> m_sphere;
     std::unique_ptr<OpenGLShape> m_snowball;
     std::unique_ptr<OpenGLShape> m_leftWall;
     std::unique_ptr<OpenGLShape> m_rightWall;
@@ -81,6 +84,8 @@ private:
     std::unique_ptr<OpenGLShape> m_backLeftPainting;
     std::unique_ptr<OpenGLShape> m_backRightPainting;
     std::unique_ptr<OpenGLShape> m_door;
+    std::unique_ptr<OpenGLShape> m_chair;
+    std::unique_ptr<OpenGLShape> m_table;
 
     glm::vec3 m_snowballPos;
     glm::vec3 m_snowballVelocity;
@@ -89,6 +94,7 @@ private:
     // Update this array whenever a new texture is added
     GLuint m_textures[10];
 
+    std::vector<std::tuple<float, float>> m_starLocs;
     Terrain m_terrain;
 
     std::unique_ptr<OpenGLShape> m_quad;

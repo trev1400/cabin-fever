@@ -47,7 +47,9 @@ SOURCES += ui/mainwindow.cpp \
 
 
 HEADERS += ui_mainwindow.h \
+    lib/furniture.h \
     lib/paintings.h \
+    lib/stars.h \
     lib/window.h \
     stb_image.h \
     lib/room.h \
