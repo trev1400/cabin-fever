@@ -60,7 +60,7 @@ const vec4 lightColors[] = vec4[](
         // 8: Right upper middle of room
         vec4(1, 1, 1, 1),
         // 9: Right lower middle of room
-        vec4(0.5, 0.5, 0.5, 1),
+        vec4(0.2, 0.2, 0.2, 1),
         // 10: Back middle left of room
         vec4(1, 1, 1, 1),
         // 11: Back middle right of room

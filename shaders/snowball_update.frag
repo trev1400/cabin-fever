@@ -8,7 +8,6 @@ uniform int numParticles;
 // output from quad.vert
 in vec2 uv;
 
-// TODO [Task 15] setup the output locations
 layout(location = 0) out vec4 pos;
 layout(location = 1) out vec4 vel;
 
@@ -51,7 +50,6 @@ vec4 initVelocity(int index) {
 }
 
 vec4 updatePosition(int index) {
-    // TODO [Task 16]
     // - sample prevPos and prevVel at uv
     // - xyz: pos + vel * dt
     // - w component is lifetime, so keep it from the previous position
@@ -63,7 +61,6 @@ vec4 updatePosition(int index) {
 
 vec4 updateVelocity(int index) {
     const float G = -1.5;
-    // TODO [Task 16]
     // - sample prevVel at uv
     // - only force is gravity in y direction.  Add G * dt.
     // - w component is age, so add dt

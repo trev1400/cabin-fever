@@ -18,6 +18,7 @@
 #include "stb_image.h"
 
 #define PI 3.14159265f
+const std::string FILE_PATH_PREFIX = "/Users/trevoring/Desktop/cs1230/test/cabin-fever/";
 
 GLWidget::GLWidget(QGLFormat format, QWidget *parent)
     : QGLWidget(format, parent),
@@ -49,6 +50,8 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
       m_backRightPainting(nullptr),
       m_door(nullptr),
       m_chair(nullptr),
+      m_rug(nullptr),
+      m_shadow(nullptr),
       m_snowballPos(glm::vec3(28.f, 3.5f, -50.f)),
       m_snowballVelocity(glm::vec3(-1.1f, -.03f, 1.f)),      
       m_snowballPressed(false),
@@ -65,7 +68,7 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
       m_numParticles(150),
       m_model(glm::mat4(1.f)),
       m_angleX(0.f),
-      m_angleY(0.f),
+      m_angleY(0.1f),
       m_zoom(0.1f)
 {}
 
@@ -100,16 +103,22 @@ void GLWidget::initializeTextures()
 
     std::vector<TextureInfo> textureInfo;
 
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/wood.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/pane.png", true});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/windowframe.png", true});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/mountain_cabin_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/alps_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/nature_mural_1.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/nature_mural_2.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/polar_bear_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/merry_xmas_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/door.jpg", false});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "wood.jpg", false});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "pane.png", true});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "windowframe.png", true});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "mountain_cabin_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "alps_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "nature_mural_1.jpg", false});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "nature_mural_2.jpg", false});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "polar_bear_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "merry_xmas_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "door.jpg", false});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "furniture_wood.jpg", false});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "reindeer.jpg", false});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "holiday_pattern.jpg", false});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "welcome_mat.jpg", false});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "shadow.png", true});
+    textureInfo.push_back(TextureInfo{FILE_PATH_PREFIX + "leather.jpg", false});
 
     glGenTextures(textureInfo.size(), m_textures);
 
@@ -237,10 +246,19 @@ void GLWidget::initializeRoom()
     initializeOpenGLShape(m_door, DOOR_VERTEX_POSITIONS, NUM_TWO_SIDED_QUAD_VERTICES, true);
     // Chair
     m_chair = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_chair, CHAIR_VERTEX_POSITIONS, NUM_CHAIR_VERTICES, false);
+    initializeOpenGLShape(m_chair, CHAIR_VERTEX_POSITIONS, NUM_CHAIR_VERTICES, true);
     // Table
     m_table = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_table, TABLE_VERTEX_POSITIONS, NUM_TABLE_VERTICES, false);
+    initializeOpenGLShape(m_table, TABLE_VERTEX_POSITIONS, NUM_TABLE_VERTICES, true);
+    // Sofa
+    m_sofa = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_sofa, SOFA_VERTEX_POSITIONS, NUM_SOFA_VERTICES, true);
+    // Rug
+    m_rug = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_rug, RUG_VERTEX_POSITIONS, NUM_ONE_SIDED_QUAD_VERTICES, true);
+    // Floor shadow
+    m_shadow = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_shadow, SHADOW_VERTEX_POSITIONS, NUM_ONE_SIDED_QUAD_VERTICES, true);
 }
 
 void GLWidget::initializeTerrain() {
@@ -261,14 +279,14 @@ void GLWidget::initializeDefaultPhongParameters() {
     // Projection and view matrices and lighting variables
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
-    glUniform1f(glGetUniformLocation(m_phongProgram, "shininess"), 20.41f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "shininess"), 20.f);
     glUniform1f(glGetUniformLocation(m_phongProgram, "lightIntensity"), 5.f);
     glUniform1f(glGetUniformLocation(m_phongProgram, "attQuadratic"), 0.f);
     glUniform1f(glGetUniformLocation(m_phongProgram, "attLinear"), 0.81f);
-    glUniform1f(glGetUniformLocation(m_phongProgram, "attConstant"), 2.16f);
-    glUniform1f(glGetUniformLocation(m_phongProgram, "ambientIntensity"), 0.28f);
-    glUniform1f(glGetUniformLocation(m_phongProgram, "diffuseIntensity"), 0.62f);
-    glUniform1f(glGetUniformLocation(m_phongProgram, "specularIntensity"), 0.59f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "attConstant"), 2.4f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "ambientIntensity"), 0.3f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "diffuseIntensity"), 0.5f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "specularIntensity"), 0.05f);
     glUniform1i(glGetUniformLocation(m_phongProgram, "hasTexture"), true);
     glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.f, 0.f, 0.f, 1.f);
     rebuildMatrices();
@@ -305,6 +323,90 @@ void GLWidget::paintGL() {
     glUseProgram(0);
 }
 
+void GLWidget::drawShadows() {
+    // Enable blending for shadows
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBindTexture(GL_TEXTURE_2D, m_textures[14]);
+
+    // Below reindeer rug
+    m_model = glm::translate(glm::vec3(0.f, -2.995f, -6.5f)) * glm::scale(glm::vec3(1.515, 0, 2.035));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below red holiday rug
+    m_model = glm::translate(glm::vec3(5.5f, -2.995f, 0.f)) * glm::rotate(static_cast<float>(M_PI_2), glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(1.515, 0, 2.035));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below welcome mat
+    m_model = glm::translate(glm::vec3(0.f, -2.995f, 7.f)) * glm::scale(glm::vec3(0.69, 0, 1.25));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below door frame
+    m_model = glm::translate(glm::vec3(0.f, -2.995f, 8.95f)) * glm::scale(glm::vec3(1, 0, 0.1));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below back chair front right leg
+    m_model = glm::translate(glm::vec3(-5.95f, -2.995f, -2.465f)) * glm::scale(glm::vec3(0.05, 0, 0.1));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below back chair back right leg
+    m_model = glm::translate(glm::vec3(-5.95f, -2.995f, -3.6f)) * glm::scale(glm::vec3(0.05, 0, 0.1));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below back chair front left leg
+    m_model = glm::translate(glm::vec3(-7.f, -2.995f, -2.465f)) * glm::scale(glm::vec3(0.05, 0, 0.1));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below front chair front left leg
+    m_model = glm::translate(glm::vec3(-5.95f, -2.995f, 2.465f)) * glm::scale(glm::vec3(0.05, 0, 0.1));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below front chair front right leg
+    m_model = glm::translate(glm::vec3(-5.95f, -2.995f, 3.6f)) * glm::scale(glm::vec3(0.05, 0, 0.1));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below front chair back left leg
+    m_model = glm::translate(glm::vec3(-7.f, -2.995f, 2.465f)) * glm::scale(glm::vec3(0.05, 0, 0.1));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below table front right leg
+    m_model = glm::translate(glm::vec3(-5.35f, -2.995f, 2.66f)) * glm::scale(glm::vec3(0.1, 0, 0.2));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below table front left leg
+    m_model = glm::translate(glm::vec3(-7.65f, -2.995f, 2.66f)) * glm::scale(glm::vec3(0.1, 0, 0.2));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below table back left leg
+    m_model = glm::translate(glm::vec3(-7.65f, -2.995f, -2.66f)) * glm::scale(glm::vec3(0.1, 0, 0.2));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below table back right leg
+    m_model = glm::translate(glm::vec3(-5.35f, -2.995f, -2.66f)) * glm::scale(glm::vec3(0.1, 0, 0.2));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    // Below sofa
+    m_model = glm::translate(glm::vec3(6.49f, -2.98f, 0.f)) * glm::rotate(static_cast<float>(M_PI_2), glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(1.55, 0, 1.1));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_shadow->draw();
+
+    glDisable(GL_BLEND);
+}
+
 void GLWidget::drawRoom() {
     // Switch back to phong program to draw the room
     initializeDefaultPhongParameters();
@@ -324,6 +426,11 @@ void GLWidget::drawRoom() {
     m_windowUpperPanel->draw();
     m_windowLowerPanel->draw();
 
+    // Draw floor shadows
+    drawShadows();
+
+    // Draw table and chairs
+    glBindTexture(GL_TEXTURE_2D, m_textures[10]);
     m_model = glm::translate(glm::vec3(-6.49f, -1.f, 0.f));
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
     m_table->draw();
@@ -335,6 +442,30 @@ void GLWidget::drawRoom() {
     m_model = glm::translate(glm::vec3(-6.49f, -2.f, 3.f)) * glm::rotate(static_cast<float>(M_PI), glm::vec3(0, 1, 0));
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
     m_chair->draw();
+
+    // Draw sofa
+    glBindTexture(GL_TEXTURE_2D, m_textures[15]);
+    m_model = glm::translate(glm::vec3(6.49f, 0.f, 0.f)) * glm::rotate(static_cast<float>(-M_PI_2), glm::vec3(0, 1, 0));;
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_sofa->draw();
+
+    // Draw reindeer rug
+    glBindTexture(GL_TEXTURE_2D, m_textures[11]);
+    m_model = glm::translate(glm::vec3(0, 0.f, -6.5f));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_rug->draw();
+
+    // Draw red holiday rug
+    glBindTexture(GL_TEXTURE_2D, m_textures[12]);
+    m_model = glm::translate(glm::vec3(4.5f, 0.f, 0.f)) * glm::rotate(static_cast<float>(M_PI_2), glm::vec3(0, 1, 0));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_rug->draw();
+
+    // Draw welcome mat
+    glBindTexture(GL_TEXTURE_2D, m_textures[13]);
+    m_model = glm::translate(glm::vec3(0.f, -2.99f, 7.f)) * glm::scale(glm::vec3(0.45, 0, 0.6));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_rug->draw();
 
     m_model = glm::translate(glm::vec3(0.f, 0.f, 0.f));
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
@@ -509,8 +640,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void GLWidget::wheelEvent(QWheelEvent *event) {
-    m_zoom -= event->delta() / 100.f;
-    rebuildMatrices();
+
 }
 
 void GLWidget::rebuildMatrices() {
@@ -524,7 +654,6 @@ void GLWidget::rebuildMatrices() {
 
 
 void GLWidget::settingsChanged() {
-    std::cout << "glwidget: settings changed" << std::endl;
     initializeTerrain();
 }
 

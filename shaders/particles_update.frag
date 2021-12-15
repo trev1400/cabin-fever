@@ -9,7 +9,6 @@ uniform float gravity;
 // output from quad.vert
 in vec2 uv;
 
-// TODO [Task 15] setup the output locations
 layout(location = 0) out vec4 pos;
 layout(location = 1) out vec4 vel;
 
@@ -30,9 +29,6 @@ float hash(float n) { return fract(sin(n)*753.5453123); }
 // Helper functions to procedurally generate lifetimes and initial velocities
 // based on particle index
 float calculateLifetime(int index) {
-//    const float MAX_LIFETIME = 15.0;
-//    const float MIN_LIFETIME = 8;
-//    return MIN_LIFETIME + (MAX_LIFETIME - MIN_LIFETIME) * hash(index * 2349.2693);
     return 20.0;
 }
 

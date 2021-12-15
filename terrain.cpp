@@ -39,33 +39,6 @@ glm::vec3 Terrain::getPosition(int row, int col)
         }
     }
 
-    // 3 (jagged) to 15 (flat), default = 5
-//    int scale = 18 - settings.windiness;
-//    float amp = 1;
-//    float freq = 1;
-
-//    for (int i = 0; i < 4; i++) {
-//        float new_row = glm::floor((float)row/scale);
-//        float new_col = glm::floor((float)col/scale);
-
-//        float row_frac = glm::fract((float)row/scale);
-//        float col_frac = glm::fract((float)col/scale);
-
-//        // height vals
-//        float A = randValue(new_row, new_col, amp); // curr square
-//        float B = randValue(new_row, new_col+1, amp); // one to the right
-//        float C = randValue(new_row+1, new_col, amp); // bottom
-//        float D = randValue(new_row+1, new_col+1, amp); // bottom right
-
-//        float bicubic_col = 3.0*pow(col_frac,2) - 2.0*pow(col_frac,3);
-//        float bicubic_row = 3.0*pow(row_frac,2) - 2.0*pow(row_frac,3);
-
-//        float height = (glm::mix(glm::mix(A, B, bicubic_col), glm::mix(C, D, bicubic_col), bicubic_row)) / pow(2, i);
-//        position.y += height;
-
-//        scale = scale * 2;
-//    }
-     float noiseSum = 0;
      float a = 1 + settings.snowLevel;
      float f = 1 + settings.windiness;
 
@@ -90,8 +63,6 @@ glm::vec3 Terrain::getPosition(int row, int col)
          a *= 0.5;
          f *= 2;
      }
-
-//     position.y = noiseSum;
 
     return position;
 }
@@ -174,7 +145,5 @@ void Terrain::draw()
 }
 
 void Terrain::settingsChanged() {
-    std::cout << "terrain: settings changed" << std::endl;
-    std::cout << "TERRAIN: windiness: " << settings.windiness << std::endl;
     this->init();
 }

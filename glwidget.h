@@ -53,6 +53,7 @@ protected:
     void drawStars();
     void drawWindow();
     void drawParticles(GLuint updateProgram, GLuint VAO, std::shared_ptr<FBO> FBO1, std::shared_ptr<FBO> FBO2, float rate, float size, bool first, int numParticles);
+    void drawShadows();
 private:
     int m_width;
     int m_height;
@@ -87,6 +88,9 @@ private:
     std::unique_ptr<OpenGLShape> m_door;
     std::unique_ptr<OpenGLShape> m_chair;
     std::unique_ptr<OpenGLShape> m_table;
+    std::unique_ptr<OpenGLShape> m_sofa;
+    std::unique_ptr<OpenGLShape> m_rug;
+    std::unique_ptr<OpenGLShape> m_shadow;
 
     glm::vec3 m_snowballPos;
     glm::vec3 m_snowballVelocity;
@@ -96,7 +100,7 @@ private:
     int m_snowballParticles;
 
     // Update this array whenever a new texture is added
-    GLuint m_textures[10];
+    GLuint m_textures[16];
 
     std::vector<std::tuple<float, float>> m_starLocs;
     Terrain m_terrain;

@@ -43,7 +43,7 @@ void MainWindow::dataBind() {
     BIND(FloatBinding::bindSliderAndTextbox(
         m_ui->snowLevelSlider, m_ui->snowLevelTextbox, settings.snowLevel, 0.f, 10.f))
     BIND(FloatBinding::bindSliderAndTextbox(
-        m_ui->windinessSlider, m_ui->windinessTextbox, settings.windiness, 0.f, 3.f))
+        m_ui->WindinessSlider, m_ui->windinessTextbox, settings.windiness, 0.f, 3.f))
 
 #undef BIND
 }
@@ -57,11 +57,6 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::settingsChanged() {
-    std::cout << "settings changed" << std::endl;
-    std::cout << "snow rate: " << settings.snowRate << std::endl;
-    std::cout << "snow size: " << settings.snowSize << std::endl;
-    std::cout << "snow level: " << settings.snowLevel << std::endl;
-    std::cout << "windiness: " << settings.windiness << std::endl;
     m_glWidget->settingsChanged();
 }
 
@@ -70,5 +65,5 @@ void MainWindow::throwSnowball() {
 }
 
 void MainWindow::shovel() {
-    std::cout << "shovel" << std::endl;
+
 }
