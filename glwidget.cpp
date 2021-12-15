@@ -401,7 +401,7 @@ void GLWidget::drawScene() {
         m_snowballExplode = true;
         m_snowballFirst = true;
     }
-    m_model = glm::translate(m_snowballPos) * glm::scale(glm::vec3(0.5));
+    m_model = glm::scale(glm::vec3(0.5)) * glm::translate(m_snowballPos);
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
     glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 1.f, 1.f, 1.f, 1.f);
     m_snowball->draw();
