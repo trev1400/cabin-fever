@@ -14,5 +14,6 @@
         <file>quad.vert</file>
         <file>terrain.frag</file>
         <file>terrain.vert</file>
+        <file>snowball_update.frag</file>
     </qresource>
 </RCC>

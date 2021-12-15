@@ -49,7 +49,7 @@ protected:
     void drawTerrain();
     void drawScene();
     void drawWindow();
-    void drawParticles();
+    void drawParticles(GLuint updateProgram, GLuint VAO, std::shared_ptr<FBO> FBO1, std::shared_ptr<FBO> FBO2, float rate, float size, bool first, int numParticles);
 private:
     int m_width;
     int m_height;
@@ -61,6 +61,7 @@ private:
     GLuint m_terrainProgram;
     GLuint m_particleUpdateProgram;
     GLuint m_particleDrawProgram;
+    GLuint m_snowballUpdateProgram;
 
     std::unique_ptr<OpenGLShape> m_moon;
     std::unique_ptr<OpenGLShape> m_snowball;
@@ -85,6 +86,9 @@ private:
     glm::vec3 m_snowballPos;
     glm::vec3 m_snowballVelocity;
     bool m_snowballPressed;
+    bool m_snowballExplode;
+    bool m_snowballFirst;
+    int m_snowballParticles;
 
     // Update this array whenever a new texture is added
     GLuint m_textures[10];
@@ -96,6 +100,10 @@ private:
     GLuint m_particlesVAO;
     std::shared_ptr<FBO> m_particlesFBO1;
     std::shared_ptr<FBO> m_particlesFBO2;
+
+    GLuint m_snowballVAO;
+    std::shared_ptr<FBO> m_snowballFBO1;
+    std::shared_ptr<FBO> m_snowballFBO2;
     bool m_firstPass;
     bool m_evenPass;
     int m_numParticles;

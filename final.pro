@@ -126,4 +126,5 @@ DISTFILES += \
     shaders/particles_draw.frag \
     shaders/particles_draw.vert \
     shaders/particles_update.frag \
-    shaders/quad.vert
+    shaders/quad.vert \
+    shaders/snowball_update.frag
