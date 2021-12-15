@@ -2,6 +2,7 @@
 #define GLWIDGET_H
 
 #include <memory>
+#include <iostream>
 
 #include "GL/glew.h"
 #include <QGLWidget>
@@ -38,6 +39,7 @@ protected:
     void mousePressEvent(QMouseEvent *e);
     void mouseMoveEvent(QMouseEvent *e);
     void wheelEvent(QWheelEvent *e);
+    void initializeDefaultPhongParameters();
     void initializeRoom();
     void initializeTerrain();
     void initializeScene();
@@ -48,9 +50,9 @@ protected:
     void drawRoom();
     void drawTerrain();
     void drawScene();
+    void drawStars();
     void drawWindow();
-    void drawParticles();
-    void setParticleViewport();
+    void drawParticles(GLuint updateProgram, GLuint VAO, std::shared_ptr<FBO> FBO1, std::shared_ptr<FBO> FBO2, float rate, float size, bool first, int numParticles);
 private:
     int m_width;
     int m_height;
@@ -62,8 +64,9 @@ private:
     GLuint m_terrainProgram;
     GLuint m_particleUpdateProgram;
     GLuint m_particleDrawProgram;
+    GLuint m_snowballUpdateProgram;
 
-    std::unique_ptr<OpenGLShape> m_moon;
+    std::unique_ptr<OpenGLShape> m_sphere;
     std::unique_ptr<OpenGLShape> m_snowball;
     std::unique_ptr<OpenGLShape> m_leftWall;
     std::unique_ptr<OpenGLShape> m_rightWall;
@@ -82,14 +85,20 @@ private:
     std::unique_ptr<OpenGLShape> m_backLeftPainting;
     std::unique_ptr<OpenGLShape> m_backRightPainting;
     std::unique_ptr<OpenGLShape> m_door;
+    std::unique_ptr<OpenGLShape> m_chair;
+    std::unique_ptr<OpenGLShape> m_table;
 
     glm::vec3 m_snowballPos;
     glm::vec3 m_snowballVelocity;
     bool m_snowballPressed;
+    bool m_snowballExplode;
+    bool m_snowballFirst;
+    int m_snowballParticles;
 
     // Update this array whenever a new texture is added
     GLuint m_textures[10];
 
+    std::vector<std::tuple<float, float>> m_starLocs;
     Terrain m_terrain;
 
     std::unique_ptr<OpenGLShape> m_quad;
@@ -97,6 +106,10 @@ private:
     GLuint m_particlesVAO;
     std::shared_ptr<FBO> m_particlesFBO1;
     std::shared_ptr<FBO> m_particlesFBO2;
+
+    GLuint m_snowballVAO;
+    std::shared_ptr<FBO> m_snowballFBO1;
+    std::shared_ptr<FBO> m_snowballFBO2;
     bool m_firstPass;
     bool m_evenPass;
     int m_numParticles;
