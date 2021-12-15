@@ -122,6 +122,8 @@ DISTFILES += \
     shaders/glass.frag \
     shaders/glass.vert \
     shaders/terrain.frag \
+    shaders/terrain.frag \
+    shaders/terrain.vert \
     shaders/terrain.vert \
     shaders/texture.frag \
     shaders/texture.vert \

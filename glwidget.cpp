@@ -100,16 +100,16 @@ void GLWidget::initializeTextures()
 
     std::vector<TextureInfo> textureInfo;
 
-    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/wood.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/pane.png", true});
-    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/windowframe.png", true});
-    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/mountain_cabin_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/alps_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/nature_mural_1.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/nature_mural_2.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/polar_bear_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/merry_xmas_painting.jpg", false});
-    textureInfo.push_back(TextureInfo{"/Users/annazhao/anna/brown/graphics/cabin-fever/door.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/wood.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/pane.png", true});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/windowframe.png", true});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/mountain_cabin_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/alps_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/nature_mural_1.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/nature_mural_2.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/polar_bear_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/merry_xmas_painting.jpg", false});
+    textureInfo.push_back(TextureInfo{"/Users/renajiang/Desktop/course/cs123/cabin-fever/door.jpg", false});
 
     glGenTextures(textureInfo.size(), m_textures);
 
@@ -444,7 +444,7 @@ void GLWidget::drawWindow() {
 void GLWidget::drawTerrain() {
     glUseProgram(m_terrainProgram);
     // Set uniforms.
-    glUniformMatrix4fv(glGetUniformLocation(m_terrainProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    glUniformMatrix4fv(glGetUniformLocation(m_terrainProgram, "model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.f)));
     glUniformMatrix4fv(glGetUniformLocation(m_terrainProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
     glUniformMatrix4fv(glGetUniformLocation(m_terrainProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
     // Draw terrain
