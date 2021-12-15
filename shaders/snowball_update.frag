@@ -41,7 +41,7 @@ vec2 calculateInitialVelocity(int index) {
 }
 
 vec4 initPosition(int index) {
-    vec3 spawn = vec3(-0.58, 0.33, 0);
+    vec3 spawn = vec3(-0.55, 0.49, 0);
     return vec4(spawn, calculateLifetime(index));
 }
 
