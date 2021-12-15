@@ -1,6 +1,6 @@
 .DS_Store
 final.pro.user
-final.app
+final.app/Contents/MacOS/final
 
 *.o
 moc_*

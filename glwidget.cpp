@@ -4,13 +4,14 @@
 #include "lib/room.h"
 #include "lib/window.h"
 #include "lib/paintings.h"
+#include "lib/stars.h"
+#include "lib/furniture.h"
 #include "lib/resourceloader.h"
 #include "lib/errorchecker.h"
 #include "Settings.h"
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include "openglshape.h"
-#include "iostream"
 #include "gl/textures/Texture2D.h"
 #include "gl/shaders/ShaderAttribLocations.h"
 #define STB_IMAGE_IMPLEMENTATION
@@ -29,7 +30,7 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
       m_particleUpdateProgram(0),
       m_particleDrawProgram(0),
       m_snowballUpdateProgram(0),
-      m_moon(nullptr),
+      m_sphere(nullptr),
       m_snowball(nullptr),
       m_leftWall(nullptr),
       m_rightWall(nullptr),
@@ -47,8 +48,9 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent)
       m_backLeftPainting(nullptr),
       m_backRightPainting(nullptr),
       m_door(nullptr),
+      m_chair(nullptr),
       m_snowballPos(glm::vec3(28.f, 3.5f, -50.f)),
-      m_snowballVelocity(glm::vec3(-1.1f, -.03f, 1.f)),
+      m_snowballVelocity(glm::vec3(-1.1f, -.03f, 1.f)),      
       m_snowballPressed(false),
       m_snowballExplode(false),
       m_snowballFirst(false),
@@ -179,9 +181,11 @@ void GLWidget::initializeParticles() {
 
 void GLWidget::initializeScene()
 {
-    // Moon
-    m_moon = std::make_unique<OpenGLShape>();
-    initializeOpenGLShape(m_moon, SPHERE_VERTEX_POSITIONS, NUM_SPHERE_VERTICES, false);
+    // Generate star locations to be drawn later
+    m_starLocs = generateStarLocations();
+    // Generate sphere that will be used for stars and moon
+    m_sphere = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_sphere, SPHERE_VERTEX_POSITIONS, NUM_SPHERE_VERTICES, false);
     m_snowball = std::make_unique<OpenGLShape>();
     // Snowball
     initializeOpenGLShape(m_snowball, SPHERE_VERTEX_POSITIONS, NUM_SPHERE_VERTICES, false);
@@ -231,6 +235,12 @@ void GLWidget::initializeRoom()
     // Door
     m_door = std::make_unique<OpenGLShape>();
     initializeOpenGLShape(m_door, DOOR_VERTEX_POSITIONS, NUM_TWO_SIDED_QUAD_VERTICES, true);
+    // Chair
+    m_chair = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_chair, CHAIR_VERTEX_POSITIONS, NUM_CHAIR_VERTICES, false);
+    // Table
+    m_table = std::make_unique<OpenGLShape>();
+    initializeOpenGLShape(m_table, TABLE_VERTEX_POSITIONS, NUM_TABLE_VERTICES, false);
 }
 
 void GLWidget::initializeTerrain() {
@@ -244,9 +254,32 @@ void GLWidget::initializeTerrain() {
     m_terrain.openGLShape->buildVAO();
 }
 
+void GLWidget::initializeDefaultPhongParameters() {
+    // Sets up phong shader program and all of its uniforms
+    glUseProgram(m_phongProgram);
+
+    // Projection and view matrices and lighting variables
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
+    glUniform1f(glGetUniformLocation(m_phongProgram, "shininess"), 20.41f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "lightIntensity"), 5.f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "attQuadratic"), 0.f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "attLinear"), 0.81f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "attConstant"), 2.16f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "ambientIntensity"), 0.28f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "diffuseIntensity"), 0.62f);
+    glUniform1f(glGetUniformLocation(m_phongProgram, "specularIntensity"), 0.59f);
+    glUniform1i(glGetUniformLocation(m_phongProgram, "hasTexture"), true);
+    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.f, 0.f, 0.f, 1.f);
+    rebuildMatrices();
+}
+
 void GLWidget::paintGL() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Draws scene elements behind the terrain (stars, moon)
+    drawScene();
 
     // Draws the terrain
     drawTerrain();
@@ -262,26 +295,8 @@ void GLWidget::paintGL() {
     }
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    // Sets up phong shader program and all of its unfiroms
-    glUseProgram(m_phongProgram);
-
-    // Projection and view matrices and lighting variables
-    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
-    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
-    glUniform1f(glGetUniformLocation(m_phongProgram, "shininess"), 20.41f);
-    glUniform1f(glGetUniformLocation(m_phongProgram, "lightIntensity"), 5.f);
-    glUniform1f(glGetUniformLocation(m_phongProgram, "attQuadratic"), 0.f);
-    glUniform1f(glGetUniformLocation(m_phongProgram, "attLinear"), 0.81f);
-    glUniform1f(glGetUniformLocation(m_phongProgram, "attConstant"), 2.16f);
-    glUniform1f(glGetUniformLocation(m_phongProgram, "ambientIntensity"), 0.28f);
-    glUniform1f(glGetUniformLocation(m_phongProgram, "diffuseIntensity"), 0.62f);
-    glUniform1f(glGetUniformLocation(m_phongProgram, "specularIntensity"), 0.59f);
-    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.f, 0.f, 0.f, 1.f);
-
     // Draws the room
     drawRoom();
-    // Draws the extra scene elements (moon, stars, snowball)
-    drawScene();
     // Draws the window frame and pane
     drawWindow();
 
@@ -291,9 +306,12 @@ void GLWidget::paintGL() {
 }
 
 void GLWidget::drawRoom() {
+    // Switch back to phong program to draw the room
+    initializeDefaultPhongParameters();
+
+    glUniform1i(glGetUniformLocation(m_phongProgram, "hasTexture"), true);
     m_model = glm::translate(glm::vec3(0.f, 0.f, 0.f));
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
-    rebuildMatrices();
 
     // Draw the walls, floor, and ceiling
     glBindTexture(GL_TEXTURE_2D, m_textures[0]);
@@ -305,6 +323,21 @@ void GLWidget::drawRoom() {
     m_windowSidePanels->draw();
     m_windowUpperPanel->draw();
     m_windowLowerPanel->draw();
+
+    m_model = glm::translate(glm::vec3(-6.49f, -1.f, 0.f));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_table->draw();
+
+    m_model = glm::translate(glm::vec3(-6.49f, -2.f, -3.f));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_chair->draw();
+
+    m_model = glm::translate(glm::vec3(-6.49f, -2.f, 3.f)) * glm::rotate(static_cast<float>(M_PI), glm::vec3(0, 1, 0));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    m_chair->draw();
+
+    m_model = glm::translate(glm::vec3(0.f, 0.f, 0.f));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
 
     // Draw the paintings
     glBindTexture(GL_TEXTURE_2D, m_textures[3]);
@@ -332,12 +365,34 @@ void GLWidget::drawRoom() {
     m_door->draw();
 }
 
-void GLWidget::drawScene() {
-    m_model = glm::translate(glm::vec3(8.f, 4.f, -25.f));
-    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
-    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.89f, 0.91f, 1.f, 0.5f);
-    m_moon->draw();  
+void GLWidget::drawStars()
+{
+    // Stars don't have texture
+    glUniform1i(glGetUniformLocation(m_phongProgram, "hasTexture"), false);
+    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.4f, 0.4f, 0.4f, 0.1f);
+    for (auto &s : m_starLocs) {
+        float xLoc = std::get<0>(s);
+        float yLoc = std::get<1>(s);
+        m_model = glm::translate(glm::vec3(xLoc, yLoc, -50.f)) * glm::scale(glm::vec3(0.08f, 0.08f, 0.08f));
+        glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+        m_sphere->draw();
+    }
+}
 
+void GLWidget::drawScene() {
+    // Set up the default phong program to draw the stars
+    initializeDefaultPhongParameters();
+
+    // Draw stars
+    drawStars();
+
+    // Draws the moon
+    m_model = glm::translate(glm::vec3(9.f, 4.f, -25.f));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
+    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.96f, 0.96f, 0.94f, 1.f);
+    m_sphere->draw();
+
+    // Snowball animation
     if (m_snowballPressed && m_snowballPos.z < -19) {
         m_snowballPos += m_snowballVelocity;
     } else if (m_snowballPressed) {
@@ -346,10 +401,14 @@ void GLWidget::drawScene() {
         m_snowballExplode = true;
         m_snowballFirst = true;
     }
-    m_model = glm::scale(glm::vec3(0.5)) * glm::translate(m_snowballPos);
+    m_model = glm::translate(m_snowballPos) * glm::scale(glm::vec3(0.5));
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
-    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), .1f, .5f, 1.f, 1.f);
+    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 1.f, 1.f, 1.f, 1.f);
     m_snowball->draw();
+
+    // Reset model matrix
+    m_model = glm::translate(glm::vec3(0.f));
+    glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
 }
 
 void GLWidget::drawWindow() {
@@ -373,6 +432,7 @@ void GLWidget::drawWindow() {
     m_model = glm::translate(glm::vec3(0.f, 0.f, 0.f));
     glUniformMatrix4fv(glGetUniformLocation(m_phongProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
     glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.08f, 0.05f, 0.05f, 1.f);
+    glUniform1i(glGetUniformLocation(m_phongProgram, "hasTexture"), true);
 
     // Draw window frame
     glBindTexture(GL_TEXTURE_2D, m_textures[2]);
@@ -387,7 +447,6 @@ void GLWidget::drawTerrain() {
     glUniformMatrix4fv(glGetUniformLocation(m_terrainProgram, "model"), 1, GL_FALSE, glm::value_ptr(m_model));
     glUniformMatrix4fv(glGetUniformLocation(m_terrainProgram, "view"), 1, GL_FALSE, glm::value_ptr(m_view));
     glUniformMatrix4fv(glGetUniformLocation(m_terrainProgram, "projection"), 1, GL_FALSE, glm::value_ptr(m_projection));
-    glUniform4f(glGetUniformLocation(m_phongProgram, "color"), 0.9f, 0.9f, 0.9f, 1.f);
     // Draw terrain
     m_terrain.draw();
 }
@@ -397,7 +456,6 @@ void GLWidget::drawParticles(GLuint updateProgram, GLuint VAO, std::shared_ptr<F
     auto nextFBO = m_evenPass ? FBO2 : FBO1;
     float firstPass = first ? 1.0f : 0.0f;
 
-    // TODO [Task 14] Move the particles from prevFBO to nextFBO while updating them
     nextFBO->bind();
     glUseProgram(updateProgram);
     glActiveTexture(GL_TEXTURE0);

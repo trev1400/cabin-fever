@@ -26,10 +26,6 @@ const vec3 lights[] = vec3[](
         vec3(15, 2, 20),
         // 11: Back middle right of room
         vec3(-15, 2, 20),
-        // 12: Back lower left corner of room
-        vec3(8, -6, 8),
-        // 13: Back lower right corner of room
-        vec3(-8, -6, 8),
         // 14: Back upper middle of room
         vec3(0, 6, 20),
         // 15: Back lower middle of room
@@ -60,19 +56,15 @@ const vec4 lightColors[] = vec4[](
         // 6: Left upper middle of room
         vec4(1, 1, 1, 1),
         // 7: Left lower middle of room
-        vec4(1, 1, 1, 1),
+        vec4(0.5, 0.5, 0.5, 1),
         // 8: Right upper middle of room
         vec4(1, 1, 1, 1),
         // 9: Right lower middle of room
-        vec4(1, 1, 1, 1),
+        vec4(0.5, 0.5, 0.5, 1),
         // 10: Back middle left of room
         vec4(1, 1, 1, 1),
         // 11: Back middle right of room
         vec4(1, 1, 1, 1),
-        // 12: Back lower left corner of room
-        vec4(0, 0, 0, 1),
-        // 13: Back lower right corner of room
-        vec4(0, 0, 0, 1),
         // 14: Back upper middle of room
         vec4(0.5, 0.5, 0.5, 1),
         // 15: Back lower middle of room
@@ -101,6 +93,7 @@ uniform float ambientIntensity;
 uniform float diffuseIntensity;
 uniform float specularIntensity;
 uniform float shininess;
+uniform bool hasTexture;
 
 uniform sampler2D tex;
 
@@ -113,7 +106,7 @@ out vec4 fragColor;
 void main(){
     vec4 ambient = color * ambientIntensity;
     vec4 texColor = texture(tex, texCoord);
-    float blend = 1.f;
+    float blend = hasTexture ? 1.f : 0.f;
     vec4 diffuse = vec4(0.f);
     vec4 specular = vec4(0.f);
 

@@ -17,7 +17,6 @@ public:
     std::unique_ptr<OpenGLShape> openGLShape;
     bool isFilledIn();
     void settingsChanged();
-
 private:
     float randValue(int row, int col);
     glm::vec3 getPosition(int row, int col);
